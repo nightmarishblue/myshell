@@ -6,4 +6,4 @@
 
 // take a cmd buffer and split it into tokens, placing each into the argarr
 // returns the number of args found, which cannot be more than MAX_ARGS
-size_t splitargs(char cmdstr[MAX_CMD_LEN], char* argarr[MAX_ARGS]);
+int splitargs(char cmdstr[MAX_CMD_LEN], char* argarr[MAX_ARGS]);

@@ -1,21 +1,18 @@
 // handle argument processing and built-ins
 
 #include "../headers/args.h"
+#include "../headers/builtins.h"
 
 #include <stdlib.h>
 #include <string.h>
 
-// store of each builtin command, terminated with a sentinel for ease of use
-const char* const builtins[] = {"quit", "clr", "dir", "environ", ""};
-
-// given a string, evaluate which of the builtins it is
 int parsebuiltin(const char cmd[])
 {
     int i = 0;
-    while (builtins[i][0] != '\0')
+    const builtin* curr; // place to store the builtin we're currently looking at
+    while (curr = getbuiltin(i))
     {
-        const char* curr = builtins[i]; // builtin we are currently looking at
-        if (strcmp(curr, cmd) == 0) return i;
+        if (strcmp(curr->name, cmd) == 0) return i; // check if this builtin's name is our cmd
         i++;
     }
     return -1;

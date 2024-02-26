@@ -10,6 +10,29 @@
 
 extern char** environ;
 
+// internal array of builtins. this is not exposed to the outside, and is not supposed to change dynamically
+const builtin allbuiltins[] = {
+    {"quit", quit},
+    {"clr", clear},
+    {"dir", dir},
+    {"environ", printenviron}
+};
+
+const int numbuiltins = sizeof(allbuiltins) / sizeof(builtin); 
+
+const builtin* getbuiltin(int index)
+{
+    if (index < 0 || index >= numbuiltins) return NULL;
+    return allbuiltins + index;
+}
+
+void runbuiltin(int index, int arglen, char* args[arglen])
+{
+    const builtin* target = getbuiltin(index);
+    if (target == NULL) return; // don't deref a null*
+    (*(target->function)) (arglen, args);
+}
+
 // exit the shell
 void quit(int arglen, char* args[arglen])
 {

@@ -7,3 +7,7 @@
 // take a cmd buffer and split it into tokens, placing each into the argarr
 // returns the number of args found, which cannot be more than MAX_ARGS
 int splitargs(char cmdstr[MAX_CMD_LEN], char* argarr[MAX_ARGS]);
+
+// given a string, evaluate which of the builtins it is
+// if it is not a builtin, return -1
+int parsebuiltin(const char cmd[]);

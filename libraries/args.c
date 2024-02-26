@@ -24,7 +24,11 @@ int parsebuiltin(const char cmd[])
 int splitargs(char cmdstr[MAX_CMD_LEN], char* argarr[MAX_ARGS])
 {
     int index = 0; // index to return as length
-    argarr[index++] = strtok(cmdstr, ARG_WHITESPACE); // place the first arg into arr
-    while (argarr[index++] = strtok(NULL, ARG_WHITESPACE)); // continue until null
-    return --index; // make sure to decrement so that we handle the off-by-one
+    char* arg = strtok(cmdstr, ARG_WHITESPACE); // store the current arg into a pointer
+    while (arg != NULL && index < MAX_ARGS)
+    {
+        argarr[index++] = arg;
+        arg = strtok(NULL, ARG_WHITESPACE);
+    }
+    return index;
 }

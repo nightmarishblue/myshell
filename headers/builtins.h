@@ -19,10 +19,13 @@ void runbuiltin(int index, int arglen, char* args[arglen]);
 void quit(int arglen, char* args[arglen]);
 
 // clear the screen
-void clear(int arglen, char* args[]);
+void clear(int arglen, char* args[arglen]);
 
 // list the contents of a directory
-void dir(int arglen, char* args[]);
+void dir(int arglen, char* args[arglen]);
 
 // print all env vars
-void printenviron(int arglen, char* args[]);
+void printenviron(int arglen, char* args[arglen]);
+
+// print every arg on a line
+void echo(int arglen, char* args[arglen]);

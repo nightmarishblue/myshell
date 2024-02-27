@@ -15,7 +15,8 @@ const builtin allbuiltins[] = {
     {"quit", quit},
     {"clr", clear},
     {"dir", dir},
-    {"environ", printenviron}
+    {"environ", printenviron},
+    {"echo", echo},
 };
 
 const int numbuiltins = sizeof(allbuiltins) / sizeof(builtin); 
@@ -30,7 +31,7 @@ void runbuiltin(int index, int arglen, char* args[arglen])
 {
     const builtin* target = getbuiltin(index);
     if (target == NULL) return; // don't deref a null*
-    (*(target->function)) (arglen, args);
+    (*(target->function)) (arglen, args + 1); // the first arg is known already
 }
 
 // exit the shell
@@ -58,4 +59,13 @@ void printenviron(int arglen, char* args[arglen])
 {
     int i = 0;
     while (environ[i]) printf("%s\n", environ[i++]);
+}
+
+void echo(int arglen, char* args[arglen])
+{
+    for (int i = 0; i < arglen - 1; i++)
+    {
+        printf("%s ", args[i]);
+    }
+    printf("%s\n", args[arglen - 1]);
 }

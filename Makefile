@@ -1,4 +1,4 @@
-TARGET := my-shell
+TARGET := myshell
 
 ENTRYPOINT := main.c
 

@@ -17,6 +17,7 @@ const builtin* getbuiltin(int index);
 // the first arg is skipped, since we should know it at compile time
 void runbuiltin(int index, int arglen, char* args[arglen]);
 
+// quit the shell
 void quit(int arglen, char* args[arglen]);
 
 // clear the screen

@@ -2,6 +2,7 @@
 
 #include "../headers/args.h"
 #include "../headers/builtins.h"
+#include "../headers/io.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -18,7 +19,7 @@ int parsebuiltin(const char cmd[])
     return -1;
 }
 
-// wrapper around strtok that takes quotes into account.
+// alternative to strtok that takes quotes into account.
 char* argindexpointer = NULL;
 char* tokarg(char* __restrict__ string, const char* __restrict__ delim, const char* __restrict__ quote)
 {
@@ -73,4 +74,15 @@ int splitargs(char cmdstr[MAX_CMD_LEN], char* argarr[MAX_ARGS])
         arg = tokarg(NULL, ARG_WHITESPACE, ARG_QUOTES);
     }
     return index;
+}
+
+void parseioredirects(int arglen, char* args[arglen])
+{
+    for (int i = 0; i < arglen - 1; i++) // loop until the second-last figure
+    {
+        const ioop* operator = getioop(args[i]);
+        if (operator == NULL) continue; // ignore non-operators
+        // assume the next argument is the target file
+        redirectio(operator, args[i + 1]);
+    }
 }

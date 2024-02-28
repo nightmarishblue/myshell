@@ -12,3 +12,6 @@ int splitargs(char cmdstr[MAX_CMD_LEN], char* argarr[MAX_ARGS]);
 // given a string, evaluate which of the builtins it is
 // if it is not a builtin, return -1
 int parsebuiltin(const char cmd[]);
+
+// look for >s in the args, and perform the redirection on  target files
+void parseioredirects(int arglen, char* args[arglen]);

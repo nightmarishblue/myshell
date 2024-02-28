@@ -14,4 +14,5 @@ int splitargs(char cmdstr[MAX_CMD_LEN], char* argarr[MAX_ARGS]);
 int parsebuiltin(const char cmd[]);
 
 // look for >s in the args, and perform the redirection on  target files
+// if user attempts multiple >s, the first is applied and the rest ignored
 void parseioredirects(int arglen, char* args[arglen]);

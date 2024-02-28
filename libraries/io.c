@@ -49,6 +49,7 @@ int siobaks[3] = {-1, -1, -1}; // integers to back up our primary fds when we du
 void redirectio(const ioop* op, char* filename)
 {
     int fdno = op->fdno;
+    if (siobaks[fdno] != -1) return; // do not try to redirect a stream twice
     FILE* iofd = getiofd(fdno);
     if (iofd == NULL) return; // an invalid fdno is cause to exit early
 

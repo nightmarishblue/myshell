@@ -14,5 +14,13 @@ int splitargs(char cmdstr[MAX_CMD_LEN], char* argarr[MAX_ARGS]);
 int parsebuiltin(const char cmd[]);
 
 // look for >s in the args, and perform the redirection on  target files
-// if user attempts multiple >s, the first is applied and the rest ignored
-void parseioredirects(int arglen, char* args[arglen]);
+// each redirection and its target will be wiped from the arg arr
+// if user attempts multiple >s, the first is applied and the rest ignored, but still removed
+// returns the number of arguments that have been removed
+int parseioredirects(int arglen, char* args[arglen]);
+
+// remove all blank strings from an arg arr
+void cleanargs(int* oldlenptr, char* args[*oldlenptr]);
+
+// concatenate an array of strings into a single, space separated string
+void concatstrs(char dest[], int arrlen, char* srcstrs[arrlen]);

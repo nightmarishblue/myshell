@@ -76,13 +76,44 @@ int splitargs(char cmdstr[MAX_CMD_LEN], char* argarr[MAX_ARGS])
     return index;
 }
 
-void parseioredirects(int arglen, char* args[arglen])
+int parseioredirects(int arglen, char* args[arglen])
 {
+    int output = 0;
     for (int i = 0; i < arglen - 1; i++) // loop until the second-last figure
     {
         const ioop* operator = getioop(args[i]);
         if (operator == NULL) continue; // ignore non-operators
         // assume the next argument is the target file
         redirectio(operator, args[i + 1]);
+        // blank out both of these args, they're no longer useful
+        args[i][0] = args[i + 1][0] = '\0';
+        output = 1; // we have redirected at least one stream
     }
+    return output;
+}
+
+// remove all blank strings from an arg arr
+void cleanargs(int* oldlenptr, char* args[*oldlenptr])
+{
+    int newlen = 0;
+    int oldlen = *oldlenptr;
+
+    for (int i = 0; i < oldlen; i++)
+    {
+        char *currarg = args[i];
+        if (currarg[0] == '\0') continue; // ignore this if it's a blank string
+        args[newlen++] = currarg; // overwrite the value in the "new array"
+    }
+    *oldlenptr = newlen;
+}
+
+// concatenate an array of strings into a single, space separated string
+void concatstrs(char dest[], int arrlen, char* srcstrs[arrlen])
+{
+    for (int i = 0; i < arrlen - 1; i++)
+    {
+        strcat(dest, srcstrs[i]);
+        strcat(dest, " ");
+    }
+    strcat(dest, srcstrs[arrlen - 1]);
 }

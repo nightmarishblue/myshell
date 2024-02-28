@@ -14,6 +14,7 @@ typedef struct builtin {
 const builtin* getbuiltin(int index);
 
 // run the builtin with the given index, using the args provided
+// the first arg is skipped, since we should know it at compile time
 void runbuiltin(int index, int arglen, char* args[arglen]);
 
 void quit(int arglen, char* args[arglen]);

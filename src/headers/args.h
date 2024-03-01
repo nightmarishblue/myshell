@@ -5,7 +5,7 @@
 #define ARG_WHITESPACE " \n\t\r" // a rudimentary macro that contains whitespace.
 #define ARG_QUOTES "\"'`" // the chars that are considered quotes and will group words together
 
-// take a cmd buffer and split it into tokens, placing each into the argarr
+// take a cmd buffer and split it into tokens, placing each into the argarr and terminating with NULL
 // returns the number of args found, which cannot be more than MAX_ARGS
 int splitargs(char cmdstr[MAX_CMD_LEN], char* argarr[MAX_ARGS]);
 
@@ -14,13 +14,14 @@ int splitargs(char cmdstr[MAX_CMD_LEN], char* argarr[MAX_ARGS]);
 int parsebuiltin(const char cmd[]);
 
 // look for >s in the args, and perform the redirection on  target files
-// each redirection and its target will be wiped from the arg arr
-// if user attempts multiple >s, the first is applied and the rest ignored, but still removed
+// each redirection and its target will be replaced with a blank string
+// if user attempts multiple >s, the first is applied and the rest ignored, but still removed as above
 // returns the number of arguments that have been removed
-int parseioredirects(int arglen, char* args[arglen]);
+int parseioredirects(char* args[MAX_ARGS]);
 
-// remove all blank strings from an arg arr
-void cleanargs(int* oldlenptr, char* args[*oldlenptr]);
+// remove all blank strings from an arg arr, reterminating as needed
+// returns the new length
+int cleanargs(char* args[MAX_ARGS]);
 
-// concatenate an array of strings into a single, space separated string
-void concatstrs(char dest[], int arrlen, char* srcstrs[arrlen]);
+// concatenate an array of NULL-terminated strings into a single, space separated string
+void concatstrs(char dest[], char* srcstrs[MAX_ARGS]);

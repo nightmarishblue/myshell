@@ -27,41 +27,43 @@ const builtin* getbuiltin(int index)
     return allbuiltins + index;
 }
 
-void runbuiltin(int index, int arglen, char* args[arglen])
+void runbuiltin(int index, char* args[MAX_ARGS])
 {
     const builtin* target = getbuiltin(index);
     if (target == NULL) return; // don't deref a null*
-    (*(target->function)) (arglen - 1, args + 1); // the first arg is known already
+    (*(target->function)) (args + 1); // the first arg is known already
 }
 
-void quit(int arglen, char* args[arglen])
+void quit(char* args[MAX_ARGS])
 {
     exit(0);
 }
 
-void clear(int arglen, char* args[arglen])
+void clear(char* args[MAX_ARGS])
 {
     system("clear");
 }
 
-void dir(int arglen, char* args[arglen])
+void dir(char* args[MAX_ARGS])
 {
     char cmd[MAX_CMD_LEN] = "ls -al ";
-    if (arglen != 0) strncat(cmd, args[0], MAX_CMD_LEN - 1);
+    if (args[0]) strncat(cmd, args[0], MAX_CMD_LEN - 1);
     system(cmd);
 }
 
-void printenviron(int arglen, char* args[arglen])
+void printenviron(char* args[MAX_ARGS])
 {
     int i = 0;
     while (environ[i]) printf("%s\n", environ[i++]);
 }
 
-void echo(int arglen, char* args[arglen])
+void echo(char* args[MAX_ARGS])
 {
-    for (int i = 0; i < arglen - 1; i++)
+    int i = 0;
+    while (args[i] && args[i + 1])
     {
         printf("%s ", args[i]);
+        i++;
     }
-    printf("%s\n", args[arglen - 1]);
+    printf("%s\n", args[i]);
 }

@@ -66,54 +66,66 @@ char* tokarg(char* __restrict__ string, const char* __restrict__ delim, const ch
 
 int splitargs(char cmdstr[MAX_CMD_LEN], char* argarr[MAX_ARGS])
 {
-    int index = 0; // index to return as length
+    int len = 0; // index to return as length
     char* arg = tokarg(cmdstr, ARG_WHITESPACE, ARG_QUOTES); // store the current arg into a pointer
-    while (arg != NULL && index < MAX_ARGS)
+    while (arg != NULL && len < MAX_ARGS)
     {
-        argarr[index++] = arg;
+        argarr[len++] = arg;
         arg = tokarg(NULL, ARG_WHITESPACE, ARG_QUOTES);
     }
-    return index;
+    argarr[len] = NULL;
+    return len;
 }
 
-int parseioredirects(int arglen, char* args[arglen])
+int parseioredirects(char* args[MAX_ARGS])
 {
     int output = 0;
-    for (int i = 0; i < arglen - 1; i++) // loop until the second-last figure
+    int i = 0;
+    while (i < MAX_ARGS && args[i] && args[i + 1]) // loop until the second-last figure
     {
         const ioop* operator = getioop(args[i]);
-        if (operator == NULL) continue; // ignore non-operators
-        // assume the next argument is the target file
-        redirectio(operator, args[i + 1]);
-        // blank out both of these args, they're no longer useful
-        args[i][0] = args[i + 1][0] = '\0';
-        output = 1; // we have redirected at least one stream
+        // ignore non-operators
+        if (operator != NULL)
+        {
+            // assume the next argument is the target file
+            redirectio(operator, args[i + 1]);
+            // blank out both of these args, they're no longer useful
+            args[i][0] = args[i + 1][0] = '\0';
+            output = 1; // we have redirected at least one stream
+        }
+        i++;
     }
     return output;
 }
 
 // remove all blank strings from an arg arr
-void cleanargs(int* oldlenptr, char* args[*oldlenptr])
+int cleanargs(char* args[MAX_ARGS])
 {
-    int newlen = 0;
-    int oldlen = *oldlenptr;
+    int newlen = 0, i = 0;
 
-    for (int i = 0; i < oldlen; i++)
+    while (i < MAX_ARGS && args[i])
     {
         char *currarg = args[i];
-        if (currarg[0] == '\0') continue; // ignore this if it's a blank string
-        args[newlen++] = currarg; // overwrite the value in the "new array"
+        // ignore this if it's a blank string
+        if (currarg[0] != '\0')
+        {
+            args[newlen++] = currarg; // overwrite the value in the "new array"
+        }
+        i++;
     }
-    *oldlenptr = newlen;
+    args[newlen] = NULL;
+    return newlen;
 }
 
-// concatenate an array of strings into a single, space separated string
-void concatstrs(char dest[], int arrlen, char* srcstrs[arrlen])
+// concatenate an array of strings with a NULL terminator into a single, space separated string
+void concatstrs(char dest[], char* srcstrs[MAX_ARGS])
 {
-    for (int i = 0; i < arrlen - 1; i++)
+    int i = 0;
+    while (i < MAX_ARGS && srcstrs[i] && srcstrs[i + 1])
     {
         strcat(dest, srcstrs[i]);
         strcat(dest, " ");
+        i++;
     }
-    strcat(dest, srcstrs[arrlen - 1]);
+    strcat(dest, srcstrs[i]);
 }

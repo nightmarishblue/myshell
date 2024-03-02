@@ -60,7 +60,7 @@ int main(int argc, char* argv[argc])
 
         // 3. make sure the user hasn't closed the shell or put in an empty string
         if (feof(input)) exit(0);
-        // if (cmdargc == 0) continue; // stop if we somehow have no args
+        if (cmdargs[0] == NULL) continue; // stop if we somehow have no args
 
         // 4. fork the program and try to serve the command
         int pid, status;

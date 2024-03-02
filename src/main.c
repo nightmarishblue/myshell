@@ -8,6 +8,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <errno.h>
+
+#include <sys/types.h>
+#include <sys/wait.h>
 
 char cwdenv[MAX_DIR_LEN + 4] = "PWD=";
 char* cwd = cwdenv + 4;
@@ -36,7 +40,7 @@ int main(int argc, char* argv[argc])
         {
             fprintf(stderr, "msh: could not open file '%s': ", filename);
             perror("");
-            return 1;
+            exit(errno);
         }
     } else
     {
@@ -58,28 +62,65 @@ int main(int argc, char* argv[argc])
         if (feof(input)) exit(0);
         // if (cmdargc == 0) continue; // stop if we somehow have no args
 
-        // 4. check if user is redirecting i/o and accomodate
-        // TODO: instead of redirecting the entire program's i/o, return something that we can use to set the subshell's output
-        int redirectedio = parseioredirects(cmdargs);
-        if (redirectedio) // remove all the redirections from the cmdstring
+        // 4. fork the program and try to serve the command
+        int pid, status;
+        switch (pid = fork())
         {
-            cleanargs(cmdargs);
-            concatstrs(cmdstr, cmdargs);
+            case -1:
+                // fprintf(stderr, "msh: could not fork process: ");
+                perror("msh: could not fork");
+                // exit(errno);
+                break;
+            case 0: // fork was successful, this is the child
+                // 5. check if user is redirecting i/o and accomodate
+                int redirectedio = parseioredirects(cmdargs);
+                if (redirectedio) // remove all the redirections from the cmdstring
+                {
+                    cleanargs(cmdargs);
+                    concatstrs(cmdstr, cmdargs);
+                }
+
+                // 6. figure out whether the command is a builtin and execute accordingly
+                int builtin = parsebuiltin(cmdargs[0]); // if this cmd is a builtin, find which one it is
+                if (builtin != -1)
+                {
+                    runbuiltin(builtin, cmdargs); // run the builtin with our args and exit this copy after
+                    return 0;
+                }
+
+                execvp(cmdargs[0], cmdargs); // replace the process with the desired program
+                perror("msh: could not exec"); // this is only reached on error
+                break;
+            default:
+                waitpid(pid, &status, WUNTRACED);
+                break;
         }
 
-        // ?. execute the command
-        int builtin = parsebuiltin(cmdargs[0]); // if this cmd is a builtin, find which one it is
-        // TODO make the execution of these commands fork and use exec
-        if (builtin == -1)
-        {
-            system(cmdstr); // execute the system command with the entire string.
-        } else
-        {
-            runbuiltin(builtin, cmdargs); // execute the builtin
-        }
+        // pid_t pid = fork();
+
+        // if (pid == -1)
+        // {
+        //     fprintf(stderr, "msh: could not fork process: ");
+        //     perror("");
+        //     exit(errno);
+        // }
+
+        // if (pid == 0)
+        // {
+        //     // in child, execute
+        //     int builtin = parsebuiltin(cmdargs[0]); // if this cmd is a builtin, find which one it is
+        //     // TODO make the execution of these commands fork and use exec
+        //     if (builtin == -1)
+        //     {
+        //         system(cmdstr); // execute the system command with the entire string.
+        //     } else
+        //     {
+        //         runbuiltin(builtin, cmdargs); // execute the builtin
+        //     }
+        // }
 
         // ? + 1. fix the stdout if we changed it
-        if (redirectedio) restoreio();
+        // if (redirectedio) restoreio();
     }
 
     return 0;

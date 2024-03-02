@@ -81,7 +81,7 @@ void cd(char* args[MAX_ARGS])
     if (chdir(args[0]) == 0) // attempt to change directory
     {
         // successful, change PWD
-        getcwd(cwd, CWD_MAX_SIZE);
+        getcwd(cwd, MAX_DIR_LEN);
         printf("%s\n", cwdenv);
         putenv(cwdenv);
     } else

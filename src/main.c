@@ -1,3 +1,5 @@
+#include "main.h"
+
 #include "./headers/args.h"
 #include "./headers/builtins.h"
 #include "./headers/io.h"
@@ -6,6 +8,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+
+char cwdenv[CWD_MAX_SIZE + 4] = "PWD=";
+char* cwd = cwdenv + 4;
 
 int main(int argc, char* argv[argc])
 {
@@ -36,7 +41,7 @@ int main(int argc, char* argv[argc])
     while (1)
     {
         // 1. print the prompt
-        if (interactive) printf("8> ");
+        if (interactive) printf("%s 8> ", getenv("PWD"));
 
         // 2. wait for the user to type something, and split it into a list of args
         char* s = fgets(cmdstr, MAX_CMD_LEN, input); // grab a line from stdin

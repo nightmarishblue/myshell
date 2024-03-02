@@ -2,11 +2,12 @@
 #include "../headers/builtins.h"
 
 #include "../headers/args.h"
+#include "../main.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-// #include <unistd.h>
+#include <unistd.h>
 
 extern char** environ;
 
@@ -17,6 +18,7 @@ const builtin allbuiltins[] = {
     {"dir", dir},
     {"environ", printenviron},
     {"echo", echo},
+    {"cd", cd},
 };
 
 const int numbuiltins = sizeof(allbuiltins) / sizeof(builtin); 
@@ -66,4 +68,25 @@ void echo(char* args[MAX_ARGS])
         i++;
     }
     printf("%s\n", args[i]);
+}
+
+void cd(char* args[MAX_ARGS])
+{
+    if (!args[0]) // if given no argument
+    {
+        printf("%s\n", getenv("PWD"));
+        return;
+    }
+
+    if (chdir(args[0]) == 0) // attempt to change directory
+    {
+        // successful, change PWD
+        getcwd(cwd, CWD_MAX_SIZE);
+        printf("%s\n", cwdenv);
+        putenv(cwdenv);
+    } else
+    {
+        fprintf(stderr, "cd: could not change to '%s': ", args[0]);
+        perror("");
+    }
 }

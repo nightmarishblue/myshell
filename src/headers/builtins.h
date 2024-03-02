@@ -33,3 +33,6 @@ void printenviron(char* args[MAX_ARGS]);
 
 // print every arg on a line
 void echo(char* args[MAX_ARGS]);
+
+// change to the given directory
+void cd(char* args[MAX_ARGS]);

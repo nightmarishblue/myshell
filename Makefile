@@ -7,7 +7,7 @@ LIB_DIR := libraries/
 OUT_DIR := bin/
 
 build: $(SRC_DIR)$(ENTRYPOINT) | $(OUT_DIR)
-	gcc -o "$(OUT_DIR)$(TARGET)" $(SRC_DIR)$(LIB_DIR)* "$(SRC_DIR)$(ENTRYPOINT)"
+	gcc -o "$(OUT_DIR)$(TARGET)" $(SRC_DIR)$(LIB_DIR)* "$(SRC_DIR)$(ENTRYPOINT)" -Wall -Wpedantic
 
 $(OUT_DIR):
 	mkdir -p $(OUT_DIR)

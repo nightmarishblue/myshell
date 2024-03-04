@@ -61,6 +61,11 @@ void printenviron(char* args[MAX_ARGS])
 
 void echo(char* args[MAX_ARGS])
 {
+    if (args[0] == NULL) // if we have no arguments, print a blank line, like most echo implementations
+    {
+        putchar('\n');
+        return;
+    }
     int i = 0;
     while (args[i] && args[i + 1])
     {

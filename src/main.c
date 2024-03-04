@@ -73,8 +73,7 @@ int main(int argc, char* argv[argc])
                 break;
             case 0: // fork was successful, this is the child
                 // 5. check if user is redirecting i/o and accomodate
-                int redirectedio = parseioredirects(cmdargs);
-                if (redirectedio) // remove all the redirections from the cmdstring
+                if (parseioredirects(cmdargs)) // remove all the redirections from the cmdstring
                 {
                     cleanargs(cmdargs);
                     concatstrs(cmdstr, cmdargs);

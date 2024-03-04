@@ -11,7 +11,7 @@ int parsebuiltin(const char cmd[])
 {
     int i = 0;
     const builtin* curr; // place to store the builtin we're currently looking at
-    while (curr = getbuiltin(i))
+    while ((curr = getbuiltin(i)))
     {
         if (strcmp(curr->name, cmd) == 0) return i; // check if this builtin's name is our cmd
         i++;

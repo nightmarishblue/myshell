@@ -61,6 +61,7 @@ int main(int argc, char* argv[argc])
 
     while (1)
     {
+        // the 5 steps of the shell's loop
         // 1. print the prompt
         if (interactive) printf("%s 8> ", strrchr(getenv("PWD"), '/'));
 
@@ -74,13 +75,14 @@ int main(int argc, char* argv[argc])
         if (feof(input)) exit(0);
         if (cmdargs[0] == NULL) continue; // stop if we somehow have no args
 
-        // 3.5 check if the last arg is & - we should background process if it is, and wipe the last arg
+        // 4. check if the last arg is & - we should background process if it is, and wipe it from the list
         int shouldwait = !parsebackground(cmdargs);
 
-        // 6. figure out whether the command is a builtin - if so, we shouldn't fork
+        // 5A. figure out whether the command is a builtin - if so, we shouldn't fork
         int builtin = parsebuiltin(cmdargs[0]);
         if (builtin != -1)
         {
+            // redirect this process's output
             if (parseioredirects(cmdargs)) // remove all the redirections from the cmdstring
             {
                 cleanargs(cmdargs);
@@ -93,18 +95,17 @@ int main(int argc, char* argv[argc])
             continue;
         }
 
-        // 4. fork the program and try to serve the command
+        // 5B. else fork the program and try to serve the command
         int pid, status;
         switch (pid = fork())
         {
             case -1:
-                // fprintf(stderr, "msh: could not fork process: ");
-                perror("msh: could not fork");
-                // exit(errno);
+                perror("msh: could not fork process: ");
+                // exit(errno); // this is not a breaking error that requires the shell to stop
                 break;
             case 0: // fork was successful, this is the child
-                // 5. check if user is redirecting i/o and accomodate
-                if (parseioredirects(cmdargs)) // remove all the redirections from the cmdstring
+                // check if the user is redirecting - we need not restore the io state as the child will die
+                if (parseioredirects(cmdargs))
                 {
                     cleanargs(cmdargs);
                     concatstrs(cmdstr, cmdargs);

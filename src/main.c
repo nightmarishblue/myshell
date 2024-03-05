@@ -13,15 +13,28 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 
+// the external chars that are used by various parts of msh
+
 char cwdenv[MAX_DIR_LEN + 4] = "PWD=";
 char* cwd = cwdenv + 4;
+
+char shellenv[MAX_DIR_LEN + 6] = "SHELL=";
+char* shell = shellenv + 6;
+
+char parentenv[MAX_DIR_LEN + 7] = "PARENT=";
 
 int main(int argc, char* argv[argc])
 {
     // environment variables
-    char exepath[MAX_DIR_LEN + 6] = "SHELL="; // buffer for the path to our executable
-    exepath[readlink("/proc/self/exe", exepath + 6, MAX_DIR_LEN) + 6] = '\0'; // remember to terminate, since readlink does not
-    putenv(exepath); // set SHELL to our path
+    shellenv[readlink("/proc/self/exe", shell, MAX_DIR_LEN) + 6] = '\0'; // remember to terminate, since readlink does not
+    strcpy(parentenv + 7, shell); // also copy this to the parentenv
+    putenv(shellenv); // set SHELL to our path
+
+    if (getcwd(cwd, MAX_DIR_LEN) == NULL || putenv(cwdenv) != 0)
+    {
+        perror("msh: could not correctly set PWD: ");
+        exit(errno); // should exit for safety
+    }
 
     // argument data
     char cmdstr[MAX_CMD_LEN], argbuff[MAX_CMD_LEN]; // create a buffer to store inputted commands
@@ -89,6 +102,7 @@ int main(int argc, char* argv[argc])
                     return 0;
                 }
 
+                putenv(parentenv); // ensure the child has the correct parent
                 execvp(cmdargs[0], cmdargs); // replace the process with the desired program
                 perror("msh: could not exec"); // this is only reached on error
                 break;

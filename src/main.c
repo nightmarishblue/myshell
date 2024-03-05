@@ -94,32 +94,6 @@ int main(int argc, char* argv[argc])
                 waitpid(pid, &status, WUNTRACED);
                 break;
         }
-
-        // pid_t pid = fork();
-
-        // if (pid == -1)
-        // {
-        //     fprintf(stderr, "msh: could not fork process: ");
-        //     perror("");
-        //     exit(errno);
-        // }
-
-        // if (pid == 0)
-        // {
-        //     // in child, execute
-        //     int builtin = parsebuiltin(cmdargs[0]); // if this cmd is a builtin, find which one it is
-        //     // TODO make the execution of these commands fork and use exec
-        //     if (builtin == -1)
-        //     {
-        //         system(cmdstr); // execute the system command with the entire string.
-        //     } else
-        //     {
-        //         runbuiltin(builtin, cmdargs); // execute the builtin
-        //     }
-        // }
-
-        // ? + 1. fix the stdout if we changed it
-        // if (redirectedio) restoreio();
     }
 
     return 0;

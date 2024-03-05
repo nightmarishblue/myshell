@@ -8,6 +8,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <errno.h>
 
 extern char** environ;
 
@@ -85,10 +86,12 @@ void cd(char* args[MAX_ARGS])
 
     if (chdir(args[0]) == 0) // attempt to change directory
     {
-        // successful, change PWD
-        getcwd(cwd, MAX_DIR_LEN);
-        printf("%s\n", cwdenv);
-        putenv(cwdenv);
+        // successful, change the cwd to point to the new dir
+        if (getcwd(cwd, MAX_DIR_LEN) == NULL)
+        {
+            perror("cd: could not change PWD: ");
+            exit(errno);
+        }
     } else
     {
         fprintf(stderr, "cd: could not change to '%s': ", args[0]);

@@ -27,7 +27,6 @@ int main(int argc, char* argv[argc])
     char cmdstr[MAX_CMD_LEN], argbuff[MAX_CMD_LEN]; // create a buffer to store inputted commands
     // create an array of strings to hold each parsed arg, plus the NULL at the end
     char* cmdargs[MAX_ARGS + 1];
-    int cmdargc;
     
     FILE* input; // the iostream to pull our commands from
     int interactive = 1;
@@ -53,7 +52,7 @@ int main(int argc, char* argv[argc])
         if (interactive) printf("%s 8> ", strrchr(getenv("PWD"), '/'));
 
         // 2. wait for the user to type something, and split it into a list of args
-        char* s = fgets(cmdstr, MAX_CMD_LEN, input); // grab a line from stdin
+        fgets(cmdstr, MAX_CMD_LEN, input); // grab a line from stdin
         strncpy(argbuff, cmdstr, MAX_CMD_LEN); // cmdstr holds the unbroken string
         // split that line into args - argbuff holds the strings in cmdargs
         splitargs(argbuff, cmdargs);

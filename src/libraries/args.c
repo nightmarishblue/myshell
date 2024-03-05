@@ -129,3 +129,12 @@ void concatstrs(char dest[], char* srcstrs[MAX_ARGS])
     }
     strcat(dest, srcstrs[i]);
 }
+
+int parsebackground(char* cmdargs[MAX_ARGS])
+{
+    if (*cmdargs == NULL) return 0; // return early if cmdargs is empty
+    while (cmdargs[1] != NULL) cmdargs++; // walk to the end of the array
+    if (strcmp(*cmdargs, "&") != 0) return 0; // exit if there is no & operator
+    *cmdargs = NULL; // remove the & from the args
+    return 1;
+}

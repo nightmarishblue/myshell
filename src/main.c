@@ -62,6 +62,9 @@ int main(int argc, char* argv[argc])
         if (feof(input)) exit(0);
         if (cmdargs[0] == NULL) continue; // stop if we somehow have no args
 
+        // 3.5 check if the last arg is & - we should background process if it is, and wipe the last arg
+        int shouldwait = !parsebackground(cmdargs);
+
         // 4. fork the program and try to serve the command
         int pid, status;
         switch (pid = fork())
@@ -91,7 +94,7 @@ int main(int argc, char* argv[argc])
                 perror("msh: could not exec"); // this is only reached on error
                 break;
             default:
-                waitpid(pid, &status, WUNTRACED);
+                if (shouldwait) waitpid(pid, &status, WUNTRACED);
                 break;
         }
     }

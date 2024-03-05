@@ -77,6 +77,22 @@ int main(int argc, char* argv[argc])
         // 3.5 check if the last arg is & - we should background process if it is, and wipe the last arg
         int shouldwait = !parsebackground(cmdargs);
 
+        // 6. figure out whether the command is a builtin - if so, we shouldn't fork
+        int builtin = parsebuiltin(cmdargs[0]);
+        if (builtin != -1)
+        {
+            if (parseioredirects(cmdargs)) // remove all the redirections from the cmdstring
+            {
+                cleanargs(cmdargs);
+                concatstrs(cmdstr, cmdargs);
+            }
+
+            runbuiltin(builtin, cmdargs);
+
+            restoreio(); // restore the io, since this is still our parent process
+            continue;
+        }
+
         // 4. fork the program and try to serve the command
         int pid, status;
         switch (pid = fork())
@@ -94,17 +110,9 @@ int main(int argc, char* argv[argc])
                     concatstrs(cmdstr, cmdargs);
                 }
 
-                // 6. figure out whether the command is a builtin and execute accordingly
-                int builtin = parsebuiltin(cmdargs[0]); // if this cmd is a builtin, find which one it is
-                if (builtin != -1)
-                {
-                    runbuiltin(builtin, cmdargs); // run the builtin with our args and exit this copy after
-                    return 0;
-                }
-
                 putenv(parentenv); // ensure the child has the correct parent
                 execvp(cmdargs[0], cmdargs); // replace the process with the desired program
-                perror("msh: could not exec"); // this is only reached on error
+                perror("msh: could not exec: "); // this is only reached on error
                 break;
             default:
                 if (shouldwait) waitpid(pid, &status, WUNTRACED);

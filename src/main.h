@@ -11,3 +11,6 @@ extern char shellenv[MAX_DIR_LEN + 6];
 extern char* shell; // points to the string contains msh's path
 
 extern char parentenv[MAX_DIR_LEN + 7]; // we are also responsible for ensuring child processes know their parent
+
+// msh doesn't have much in the way of options - until now
+extern int longpath; // tracks whether or not the shell should display the full path in its prompt

@@ -23,6 +23,9 @@ char* shell = shellenv + 6;
 
 char parentenv[MAX_DIR_LEN + 7] = "PARENT=";
 
+// the shell options
+int longpath = 1;
+
 int main(int argc, char* argv[argc])
 {
     // environment variables
@@ -89,6 +92,7 @@ int main(int argc, char* argv[argc])
                 concatstrs(cmdstr, cmdargs);
             }
 
+            expandvars(cmdargs);
             runbuiltin(builtin, cmdargs);
 
             restoreio(); // restore the io, since this is still our parent process

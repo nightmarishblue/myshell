@@ -36,3 +36,9 @@ void echo(char* args[MAX_ARGS]);
 
 // change to the given directory
 void cd(char* args[MAX_ARGS]);
+
+// get help on how to use msh
+void help(char* args[MAX_ARGS]);
+
+// toggle the long path in msh's prompt
+void lpath(char* args[MAX_ARGS]);

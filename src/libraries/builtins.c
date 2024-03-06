@@ -20,6 +20,9 @@ const builtin allbuiltins[] = {
     {"environ", printenviron},
     {"echo", echo},
     {"cd", cd},
+    {"help", help}, // unfinished
+    // some extra builtins i have added
+    {"lpath", lpath}
 };
 
 const int numbuiltins = sizeof(allbuiltins) / sizeof(builtin); 
@@ -97,4 +100,15 @@ void cd(char* args[MAX_ARGS])
         fprintf(stderr, "cd: could not change to '%s': ", args[0]);
         perror("");
     }
+}
+
+void help(char* args[MAX_ARGS])
+{
+    printf("need to figure out how to find the manual\n");
+    // perhaps we store it on the net?
+}
+
+void lpath(char* args[MAX_ARGS])
+{
+    longpath = !longpath;
 }

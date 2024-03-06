@@ -1,3 +1,5 @@
+If you are looking for msh's manual, try looking in `manual/`.
+
 # CA216 Operating Systems: myshell
 
 ## Introduction

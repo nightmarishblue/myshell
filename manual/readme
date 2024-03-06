@@ -1,0 +1,160 @@
+NAME
+    my-shell / msh - my shell
+
+SYNOPSIS
+    my-shell [file]
+
+DESCRIPTION
+    msh is an absolutely non-POSIX-compliant shell that was built in a week and tested for an hour. Your milage may vary.
+
+INVOKING THE SHELL
+    msh accepts a single option argument, the path to a file containing commands to execute. msh executes each line in the file one-by-one.
+    If no such file is provided, the shell enters interactive mode, allowing the user to move around the operating system and type commands
+    at their leisure.
+
+USING THE SHELL
+    A UNIX shell is a program that provides an interface to the features the OS provides for running commands [ref1]. As a UNIX shell, msh defines
+    such a command as a string of arguments, which are described in detail in SHELL ARGUMENTS but broadly, consist of words separated by spaces.
+    As a human, can think of a command as a request that the computer "do something" [ref3].
+    
+    In an interactive session, msh will wait for the user to type out a command and press enter. The first argument is either the name of one of
+    msh's internal functions (which are listed in SHELL BUILTINS) or the path to an external program to execute.
+    The rest of the arguments will either be passed into the invoked program, or if it is a special character, it may be parsed separately
+    by msh. Such special characters are listed in SHELL OPERATORS and mostly revolve around input redirection and execution.
+    
+    Programs in directories that are in the PATH environment variable can be referenced by name, as in "ls" rather than "/usr/bin/ls." Note that
+    msh does not currently make any attempt to set this variable, so using it as a login shell may be unsafe.
+    More information on the environment and msh's interactions with it can be found in THE SHELL ENVIRONMENT.
+
+SHELL ARGUMENTS
+    A UNIX shell is more than a literal program. It is also a programming language unto itself
+    The arguments to a msh command are "words" (strings of one or more non-space characters) separated by whitespace (strings of one or more
+    space characters).
+    In other words, if the command "touch list.txt script.msh" is inputted, then the arguments are "touch", "list.txt" and "script.msh" in order.
+
+    In order to reference filenames that contain spaces, quotes can be used. The characters considered to be quotes by msh are ', " and `.
+    If the command "touch 'shopping list.txt'" is inputted, then the arguments are "touch" and "shopping list.txt".
+    Any whitespace between a pair of quotes will be respected by the shell and considered part of the argument.
+
+SHELL BUILTIN COMMANDS
+    help
+        Read this manual in your favourite pager, or more if you haven't set PAGER.
+
+    quit
+        Exit the shell.
+    
+    cd [directory]
+        Change the current directory to the specified directory if it exists.
+        If no directory was specified, instead print the current working directory.
+
+    echo [words...]
+        Print the words supplied in order, separated by a space.
+
+    dir [directory]
+        List the contents of the given directory, along with file permissions, as in a call to "ls -al".
+    
+    clr
+        Clear the screen, as in a call to "clear".
+    
+    environ
+        Print all environment variables in the form VARIABLE=VALUE.
+    
+    lpath
+        Toggle whether the long path is shown in the prompt. When on, as in the default, the absolute pathname of PWD is shown.
+        When off, only the name of the current directory is shown.
+    
+SHELL OPERATORS
+    The following operators have varying functions and as such may have different grammatical rules.
+    It is safe to assume by default that an operator must be separated from surrounding arguments with spaces, and that they can appear at any
+    point in a command. If an operator works 
+
+    > | >> <filename>
+        Redirect STDOUT to the filename or path of the next argument. If using >, the file will be truncated (overwritten).
+        If using >>, the output will be appended to the file instead. See I/O REDIRECTION for more information.
+        In either case, the file will be created if it doesn't exist. The user is warned if filename cannot be found.
+
+    2> | 2>> <filename>
+        Redirect STDERR to the filename or path of the next argument. If using 2>, the file will be truncated (overwritten).
+        If using 2>>, the output will be appended to the file instead. See I/O REDIRECTION for more information.
+        In either case, the file will be created if it doesn't exist. The user is warned if filename cannot be found.
+
+    &
+        Placed at the end of a command to specify that the program should run in the background. The command will execute, but the user will
+        regain control of the shell immediately rather than waiting for it to finish.
+        This can only be used on external programs, not shell builtins, as explained in PROCESSES AND EXECUTION.
+
+    $<variable>
+        When an argument begins with the sign $, the rest of the argument is taken to be the name of an environment variable. msh will find
+        that variable's value and replace this argument with it. If that variable is not set, the argument is untouched (for now).
+
+THE SHELL ENVIRONMENT
+    Programs in UNIX need a way to communicate with each other in order to share configs and other data.
+    This is conveniently done using environment variables. An environment variable is a string with a name and value, written as NAME=value.
+    Environment variables are traditionally named in uppercase to distinguish from normal shell variables [ref2]. 
+    (Note: msh does not currently allow you to set any form of variables.)
+    
+    Environment variables are inherited by child processes, and so they collectively form your shell's "environment." To reference the value of
+    an environment variable, one can place the name of the variable, preceded by the $ symbol.
+    For example, if the environment variable SHELL=/bin/msh is set in your session, you could query it with "echo $SHELL". If SHELL is unset,
+    then the argument is left as is, and the literal text "$SHELL" will be printed (for now).
+
+    A somewhat opinionated list of the most important environment variables to know for practical use are:
+        - HOME
+            Contains the path to the current user's home directory.
+
+        - PATH
+            Contains a ":" separated list of directories on the filesystem. When the user inputs a command that isn't a msh builtin, each
+            of these directories is searched one-by-one to identify the desired binary.
+        
+        - _
+            Yes, that is an underscore. You would reference this as "$_" when writing commands. It expands to the last argument of the last
+            inputted command. This is much more useful than you would think (or it would be, if msh implemented it yet - most shells do).
+
+
+PROCESSES AND EXECUTION
+    As a shell, msh's purpose is to provide convenient access to other programs on the filesystem. It is important to understand that when the
+    user inputs a command that is not a msh builtin, the shell will pause, start the desired program and return control to the user afterwards.
+    
+    In technical terms, msh does this by forking its process, and it is actually quite capable of not waiting for the spawned child to terminate
+    at all. If a user wishes to execute some lengthy command, they may use the & operator (placed at the end as mentioned in SHELL BUILTINS).
+    To observe this behaviour, one can try the commands "sleep 60" and "sleep 60 &".
+
+    Note that because msh does not fork for internals (for obvious reasons), the & operator is parsed but ignored when using builtins.
+    It is useful only when invoking external programs.
+
+
+I/O REDIRECTION
+    From the earliest drafts, UNIX's creators deigned to ensure the file system was as easy to work with as possible [ref4].
+    This is why in UNIX, everything is a file. The kernel treats every piece of data the exact same, no matter its source.
+
+    As an example, the command "echo hello" simply dumps out 6 characters. Those characters look the same in your terminal as they do
+    in the file "greeting.txt." msh provides the syntax of "echo hello > greeting.txt" which instructs the kernel to send that output
+    into the given file rather than the user's terminal.
+
+    msh provides operators to redirect the three standard streams - STDIN, STDOUT and STDERR. Storing the outputs of commands is powerful
+    and convenient, and advanced users are encouraged to exploit it.
+
+REFERENCES
+    [ref1] Ramey, C. (2011). The Bourne-Again Shell. The Architecture of Open Source Applications.
+
+    [ref3] Kernighan, B. W. (1978). UNIX for Beginners (Vol. 1). MURRAY Hill, NJ: Bell Laboratories.
+
+    [ref2] Kernighan, B. W., & Mashey, J. R. (1979). The UNIX™ programming environment. Software: Practice and Experience, 9(1), 1-15.
+
+AUTHOR
+    Niall Bastible Díaz
+    22314443
+    niall.bastiblediaz2@mail.dcu.ie
+
+ACKNOWLEDGEMENTS
+    I understand that the University regards breaches of academic integrity and plagiarism as grave and serious.
+
+    I have read and understood the DCU Academic Integrity and Plagiarism Policy.
+    I accept the penalties that may be imposed should I engage in practice or practices that breach this policy.
+
+    I have identified and included the source of all facts, ideas, opinions and viewpoints of others in the assignment references.
+    Direct quotations, paraphrasing, discussion of ideas from books, journal articles, internet sources, module text, or any other
+    source whatsoever are acknowledged and the sources cited are identified in the assignment references.
+
+    I declare that this material, which I now submit for assessment, is entirely my own work and has not been taken from the work of
+    others save and to the extent that such work has been cited and acknowledged within the text of my work.

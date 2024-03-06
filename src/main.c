@@ -3,6 +3,7 @@
 #include "./headers/args.h"
 #include "./headers/builtins.h"
 #include "./headers/io.h"
+#include "./headers/prompt.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -66,7 +67,7 @@ int main(int argc, char* argv[argc])
     {
         // the 5 steps of the shell's loop
         // 1. print the prompt
-        if (interactive) printf("%s 8> ", strrchr(getenv("PWD"), '/'));
+        if (interactive) printprompt();
 
         // 2. wait for the user to type something, and split it into a list of args
         fgets(cmdstr, MAX_CMD_LEN, input); // grab a line from stdin

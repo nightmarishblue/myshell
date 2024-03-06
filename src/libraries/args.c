@@ -138,3 +138,18 @@ int parsebackground(char* cmdargs[MAX_ARGS])
     *cmdargs = NULL; // remove the & from the args
     return 1;
 }
+
+void expandvars(char* cmdargs[MAX_ARGS])
+{
+    int i = 0;
+    char* curr;
+    while ((curr = cmdargs[i]) != NULL)
+    {
+        if (curr[0] == '$')
+        {
+            char* envval = getenv(curr + 1);
+            if (envval != NULL) cmdargs[i] = envval;
+        }
+        i++;
+    }
+}

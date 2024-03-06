@@ -111,7 +111,9 @@ int main(int argc, char* argv[argc])
                     concatstrs(cmdstr, cmdargs);
                 }
 
+                expandvars(cmdargs);
                 putenv(parentenv); // ensure the child has the correct parent
+
                 execvp(cmdargs[0], cmdargs); // replace the process with the desired program
                 perror("msh: could not exec: "); // this is only reached on error
                 break;

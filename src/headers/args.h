@@ -30,3 +30,8 @@ void concatstrs(char dest[], char* srcstrs[MAX_ARGS]);
 // cmdargs is an array of strings terminated by NULL
 // returns true if the final arg is &, and also removes it if it is
 int parsebackground(char* cmdargs[MAX_ARGS]);
+
+// expand arguments that begin with a prefix like $ to their environment variables
+// note that the assigned pointers lead to memory that may not belong to msh - take care
+// if a request variable like TERM isn't set, it will remain as $TERM
+void expandvars(char* cmdargs[MAX_ARGS]);

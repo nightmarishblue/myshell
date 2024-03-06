@@ -1,7 +1,11 @@
+// functions that process the commandline arguments
+// convention in msh is for the args to be char** and terminated by NULL
+
 #include <stdlib.h>
 
-#define MAX_CMD_LEN 256 // the maximum length of an input command
+#define MAX_CMD_LEN 1024 // the maximum length of an input command
 #define MAX_ARGS 64 // the maximum number of parsed arguments.
+
 #define ARG_WHITESPACE " \n\t\r" // a rudimentary macro that contains whitespace.
 #define ARG_QUOTES "\"'`" // the chars that are considered quotes and will group words together
 

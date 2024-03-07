@@ -45,7 +45,7 @@ int main(int argc, char* argv[argc])
     if (getcwd(cwd, MAX_DIR_LEN) == NULL || putenv(cwdenv) != 0)
     {
         perror("msh: could not correctly set PWD: ");
-        exit(errno); // should exit for safety
+        exit(EXIT_FAILURE); // should exit for safety
     }
 
     // argument data
@@ -64,7 +64,7 @@ int main(int argc, char* argv[argc])
         {
             fprintf(stderr, "msh: could not open file '%s': ", filename);
             perror("");
-            exit(errno);
+            exit(EXIT_FAILURE + 1);
         }
     } else
     {
@@ -130,10 +130,16 @@ int main(int argc, char* argv[argc])
                 execvp(cmdargs[0], cmdargs); // replace the process with the desired program
                 fprintf(stderr, "msh: could not exec '%s': ", cmdargs[0]);
                 perror(""); // this is only reached on error
-                exit(errno); // make sure we exit in that case
+                exit(EXIT_FAILURE + 2); // make sure we exit in that case
                 break;
             default:
-                if (shouldwait) waitpid(pid, &status, WUNTRACED);
+                if (shouldwait) 
+                {
+                    waitpid(pid, &status, WUNTRACED);
+                } else
+                {
+                    printf("& %d\n", pid);
+                }
                 break;
         }
     }

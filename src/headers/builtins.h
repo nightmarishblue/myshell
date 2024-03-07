@@ -44,3 +44,9 @@ int help(char* args[MAX_ARGS]);
 
 // toggle the long path in msh's prompt
 int lpath(char* args[MAX_ARGS]);
+
+// set the environment variable args[0]=args[1]
+int penv(char* args[MAX_ARGS]);
+
+// clear the environment variable with the name args[0]
+int cenv(char* args[MAX_ARGS]);

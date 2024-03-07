@@ -24,7 +24,9 @@ const builtin allbuiltins[] = {
     {"cd", cd},
     {"help", help}, // unfinished
     // some extra builtins i have added
-    {"lpath", lpath}
+    {"lpath", lpath},
+    {"penv", penv},
+    {"cenv", cenv},
 };
 
 const int numbuiltins = sizeof(allbuiltins) / sizeof(builtin); 
@@ -166,5 +168,43 @@ int help(char* args[MAX_ARGS])
 int lpath(char* args[MAX_ARGS])
 {
     longpath = !longpath;
+    return EXIT_SUCCESS;
+}
+
+int penv(char* args[MAX_ARGS])
+{
+    char* name = args[0], *value = args[1];
+    if (!(name && value)) // report an error if missing both args
+    {
+        fprintf(stderr, "penv: provide 2 arguments\n");
+        return EXIT_FAILURE;
+    }
+
+    if (setenv(name, value, 1) == -1)
+    {
+        fprintf(stderr, "penv: could not set %s=%s: ", name, value);
+        perror("");
+        return EXIT_FAILURE + 1;
+    }
+
+    return EXIT_SUCCESS;
+}
+
+int cenv(char* args[MAX_ARGS])
+{
+    char* name = args[0];
+    if (name == NULL)
+    {
+        fprintf(stderr, "cenv: provide 1 argument\n");
+        return EXIT_FAILURE;
+    }
+
+    if (unsetenv(name) == -1)
+    {
+        fprintf(stderr, "cenv: could not clear '%s': ", name);
+        perror("");
+        return EXIT_FAILURE + 1;
+    }
+
     return EXIT_SUCCESS;
 }

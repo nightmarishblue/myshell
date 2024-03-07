@@ -13,9 +13,9 @@ INVOKING THE SHELL
     at their leisure.
 
 USING THE SHELL
-    A UNIX shell is a program that provides an interface to the features the OS provides for running commands [ref1]. As a UNIX shell, msh defines
+    A UNIX shell is a program that provides an interface to the features the OS provides for running commands [1]. As a UNIX shell, msh defines
     such a command as a string of arguments, which are described in detail in SHELL ARGUMENTS but broadly, consist of words separated by spaces.
-    As a human, can think of a command as a request that the computer "do something" [ref3].
+    As a human, can think of a command as a request that the computer "do something" [2].
     
     In an interactive session, msh will wait for the user to type out a command and press enter. The first argument is either the name of one of
     msh's internal functions (which are listed in SHELL BUILTINS) or the path to an external program to execute.
@@ -90,7 +90,7 @@ SHELL OPERATORS
 THE SHELL ENVIRONMENT
     Programs in UNIX need a way to communicate with each other in order to share configs and other data.
     This is conveniently done using environment variables. An environment variable is a string with a name and value, written as NAME=value.
-    Environment variables are traditionally named in uppercase to distinguish from normal shell variables [ref2]. 
+    Environment variables are traditionally named in uppercase to distinguish from normal shell variables [3]. 
     (Note: msh does not currently allow you to set any form of variables.)
     
     Environment variables are inherited by child processes, and so they collectively form your shell's "environment." To reference the value of
@@ -124,7 +124,7 @@ PROCESSES AND EXECUTION
 
 
 I/O REDIRECTION
-    From the earliest drafts, UNIX's creators deigned to ensure the file system was as easy to work with as possible [ref4].
+    From the earliest drafts, UNIX's creators deigned to ensure the file system was as easy to work with as possible [4].
     This is why in UNIX, everything is a file. The kernel treats every piece of data the exact same, no matter its source.
 
     As an example, the command "echo hello" simply dumps out 6 characters. Those characters look the same in your terminal as they do
@@ -135,11 +135,13 @@ I/O REDIRECTION
     and convenient, and advanced users are encouraged to exploit it.
 
 REFERENCES
-    [ref1] Ramey, C. (2011). The Bourne-Again Shell. The Architecture of Open Source Applications.
+    [1] Ramey, C. (2011). The Bourne-Again Shell. The Architecture of Open Source Applications.
 
-    [ref3] Kernighan, B. W. (1978). UNIX for Beginners (Vol. 1). MURRAY Hill, NJ: Bell Laboratories.
+    [2] Kernighan, B. W. (1978). UNIX for Beginners (Vol. 1). MURRAY Hill, NJ: Bell Laboratories.
 
-    [ref2] Kernighan, B. W., & Mashey, J. R. (1979). The UNIX™ programming environment. Software: Practice and Experience, 9(1), 1-15.
+    [3] Kernighan, B. W., & Mashey, J. R. (1979). The UNIX™ programming environment. Software: Practice and Experience, 9(1), 1-15.
+
+    [4] Kernighan, B. W., & Mashey, J. R. (1979). The UNIX™ programming environment. Software: Practice and Experience, 9(1), 1-15.
 
 AUTHOR
     Niall Bastible Díaz

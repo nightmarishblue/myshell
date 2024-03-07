@@ -24,5 +24,5 @@ $(OUT_DIR):
 # copy the manual into the out directory
 move_manual: $(OUT_DIR)$(MAN_FILE)
 
-$(OUT_DIR)$(MAN_FILE): | $(OUT_DIR)
+$(OUT_DIR)$(MAN_FILE): $(MAN_DIR)$(MAN_FILE) | $(OUT_DIR)
 	cp "$(MAN_DIR)$(MAN_FILE)" "$(OUT_DIR)"

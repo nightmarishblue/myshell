@@ -24,15 +24,23 @@ char* shell = shellenv + 6;
 
 char parentenv[MAX_DIR_LEN + 7] = "PARENT=";
 
+char manloc[MAX_DIR_LEN + 7];
+
 // the shell options
 int longpath = 1;
 
 int main(int argc, char* argv[argc])
 {
     // environment variables
+    // TODO: check this value for the size being too big
     shellenv[readlink("/proc/self/exe", shell, MAX_DIR_LEN) + 6] = '\0'; // remember to terminate, since readlink does not
     strcpy(parentenv + 7, shell); // also copy this to the parentenv
     putenv(shellenv); // set SHELL to our path
+
+    // get the manual location
+    strcpy(manloc, shell);
+    strcpy(strrchr(manloc, '/') + 1, MAN_NAME); // we will chop off the filename and replace it with readme
+    // aware of the danger here.
 
     if (getcwd(cwd, MAX_DIR_LEN) == NULL || putenv(cwdenv) != 0)
     {

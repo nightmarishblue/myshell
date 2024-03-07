@@ -10,6 +10,8 @@
 #include <unistd.h>
 #include <errno.h>
 
+#include <sys/wait.h>
+
 extern char** environ;
 
 // internal array of builtins. this is not exposed to the outside, and is not supposed to change dynamically
@@ -33,58 +35,65 @@ const builtin* getbuiltin(int index)
     return allbuiltins + index;
 }
 
-void runbuiltin(int index, char* args[MAX_ARGS])
+int runbuiltin(int index, char* args[MAX_ARGS])
 {
     const builtin* target = getbuiltin(index);
-    if (target == NULL) return; // don't deref a null*
-    (*(target->function)) (args + 1); // the first arg is known already
+    if (target == NULL) return EXIT_SUCCESS; // don't deref a null*
+    return (*(target->function)) (args + 1); // the first arg is known already
 }
 
-void quit(char* args[MAX_ARGS])
+int quit(char* args[MAX_ARGS])
 {
     exit(0);
+    return EXIT_SUCCESS;
 }
 
-void clear(char* args[MAX_ARGS])
+int clear(char* args[MAX_ARGS])
 {
     system("clear");
+    return EXIT_SUCCESS;
 }
 
-void dir(char* args[MAX_ARGS])
+int dir(char* args[MAX_ARGS])
 {
     char cmd[MAX_CMD_LEN] = "ls -al ";
     if (args[0]) strncat(cmd, args[0], MAX_CMD_LEN - 1);
     system(cmd);
+    return EXIT_SUCCESS;
 }
 
-void printenviron(char* args[MAX_ARGS])
+int printenviron(char* args[MAX_ARGS])
 {
     int i = 0;
     while (environ[i]) printf("%s\n", environ[i++]);
+    return EXIT_SUCCESS;
 }
 
-void echo(char* args[MAX_ARGS])
+int echo(char* args[MAX_ARGS])
 {
     if (args[0] == NULL) // if we have no arguments, print a blank line, like most echo implementations
     {
         putchar('\n');
-        return;
+        return EXIT_SUCCESS;
     }
+
     int i = 0;
     while (args[i] && args[i + 1])
     {
         printf("%s ", args[i]);
         i++;
     }
+
     printf("%s\n", args[i]);
+    return EXIT_SUCCESS;
 }
 
-void cd(char* args[MAX_ARGS])
+int cd(char* args[MAX_ARGS])
 {
     if (!args[0]) // if given no argument
     {
         printf("%s\n", getenv("PWD"));
-        return;
+        return EXIT_SUCCESS;
     }
 
     if (chdir(args[0]) == 0) // attempt to change directory
@@ -93,22 +102,69 @@ void cd(char* args[MAX_ARGS])
         if (getcwd(cwd, MAX_DIR_LEN) == NULL)
         {
             perror("cd: could not change PWD: ");
-            exit(errno);
+            return errno;
         }
     } else
     {
         fprintf(stderr, "cd: could not change to '%s': ", args[0]);
         perror("");
+        return errno;
     }
+    return EXIT_SUCCESS;
 }
 
-void help(char* args[MAX_ARGS])
+int help(char* args[MAX_ARGS])
 {
-    printf("need to figure out how to find the manual\n");
-    // perhaps we store it on the net?
+    // not sure of the smartest way to find the manual
+    // decided to change directory to the binary location and have a copy there
+    // could have stored it on the net
+    char* slash = strrchr(shell, '/'); // any absolute pathname should have at least one slash
+    *slash = '\0'; // temporarily replace it with a null
+    int chstat = chdir(shell); // so we can move there
+    *slash = '/';
+
+    if (chstat == -1) // if we couldn't move there, we can stop now
+    {
+        fprintf(stderr, "help: could not move to '%s': ", shell);
+        return EXIT_FAILURE;
+    }
+
+    // figure out what the user's pager is
+    const char* pager  = getenv("PAGER") ? getenv("PAGER") : DEFAULT_PAGER;
+
+    // perform the fork
+    int pid, pstat, retval = EXIT_SUCCESS;
+    switch (pid = fork())
+    {
+        case -1:
+            perror("msh: could not fork to pager");
+            retval = EXIT_FAILURE + 1;
+            break;
+        case 0:
+            execlp(pager, pager, MAN_NAME, NULL);
+            fprintf(stderr, "help: could not exec %s: ", pager);
+            perror("");
+            exit(EXIT_FAILURE + 2); // kill the child
+            break;
+    }
+
+    // we can chdir back while we wait
+    chstat = chdir(getenv("PWD"));
+    waitpid(pid, &pstat, WUNTRACED);
+    if (WIFEXITED(pstat)) retval = WEXITSTATUS(pstat);
+
+    if (chstat == -1)
+    {
+        fprintf(stderr, "help: could not return to '%s': ", getenv("PWD"));
+        perror("");
+        retval = EXIT_FAILURE + 3;
+    }
+
+    return retval;
 }
 
-void lpath(char* args[MAX_ARGS])
+int lpath(char* args[MAX_ARGS])
 {
     longpath = !longpath;
+    return EXIT_SUCCESS;
 }

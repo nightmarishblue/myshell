@@ -46,6 +46,7 @@ SHELL BUILTIN COMMANDS
     cd [directory]
         Change the current directory to the specified directory if it exists.
         If no directory was specified, instead print the current working directory.
+        If the directory is given as "-", instead return to the previous directory.
 
     echo [words...]
         Print the words supplied in order, separated by a space.

@@ -92,25 +92,41 @@ int echo(char* args[MAX_ARGS])
 
 int cd(char* args[MAX_ARGS])
 {
-    if (!args[0]) // if given no argument
+    char* target = args[0];
+    if (target == NULL) // if given no argument
     {
         printf("%s\n", getenv("PWD"));
         return EXIT_SUCCESS;
     }
 
-    if (chdir(args[0]) == 0) // attempt to change directory
+    int chstat; // attempt to change directory
+    if (strcmp(target, "-") == 0)
     {
-        // successful, change the cwd to point to the new dir
-        if (getcwd(cwd, MAX_DIR_LEN) == NULL)
+        chstat = chdir(getenv("OLDPWD")); // go to previous directory if cd -
+    } else
+    {
+        chstat = chdir(target);
+    }
+
+    if (chstat == 0)
+    {
+        // successful, update OLDPWD
+        if (setenv("OLDPWD", cwd, 1))
+        {
+            perror("cd: could not change OLDPWD: ");
+            return EXIT_FAILURE;
+        }
+        // change PWD to point to the new dir
+        if (getcwd(cwd, MAX_DIR_LEN) == NULL) // getcwd will change the memory at cwd
         {
             perror("cd: could not change PWD: ");
-            return errno;
+            return EXIT_FAILURE + 1;
         }
     } else
     {
-        fprintf(stderr, "cd: could not change to '%s': ", args[0]);
+        fprintf(stderr, "cd: could not change to '%s': ", target);
         perror("");
-        return errno;
+        return EXIT_FAILURE + 2;
     }
     return EXIT_SUCCESS;
 }

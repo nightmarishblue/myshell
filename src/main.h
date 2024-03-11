@@ -8,6 +8,10 @@
 // this system will probably change later
 #define MAX_DIR_LEN 1024
 
+// the global argument objects
+extern char cmdstr[MAX_CMD_LEN]; // the string used to store each cmd inputted to msh
+extern char* cmdargs[MAX_ARGS + 1]; // the array of pointers that points to the start of each word in cmdstr - terminated by NULL
+
 // cwd buffer, given an arbitrary but generous size - good enough for now
 extern char cwdenv[MAX_DIR_LEN + 4];
 extern char* cwd;

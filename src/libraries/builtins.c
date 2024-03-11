@@ -27,6 +27,7 @@ const builtin allbuiltins[] = {
     {"lpath", lpath},
     {"penv", penv},
     {"cenv", cenv},
+    {"source", source},
 };
 
 const int numbuiltins = sizeof(allbuiltins) / sizeof(builtin); 
@@ -223,4 +224,16 @@ int cenv(char* args[MAX_ARGS])
     }
 
     return EXIT_SUCCESS;
+}
+
+int source(char* args[MAX_ARGS])
+{
+    char* filename = args[0];
+    if (filename == NULL)
+    {
+        fprintf(stderr, "source: provide 1 argument\n");
+        return EXIT_FAILURE;
+    }
+    // defer to feval - the builtin args pointer isn't good enough for this
+    return !feval(filename, cmdstr, cmdargs);
 }

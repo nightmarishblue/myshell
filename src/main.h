@@ -23,6 +23,8 @@ extern char* shell; // points to the string contains msh's path
 #define MAN_NAME "readme"
 #define DEFAULT_PAGER "more"
 
+#define RC_NAME ".mshrc"
+
 // msh doesn't have much in the way of options - until now
 extern int longpath; // tracks whether or not the shell should display the full path in its prompt
 

@@ -51,6 +51,17 @@ int main(int argc, char* argv[argc])
         exit(EXIT_FAILURE); // should exit for safety
     }
 
+    // try to source the user's ~/.mshrc
+    char rcfile[MAX_DIR_LEN];
+    if (getenv("HOME"))
+    {
+        strncpy(rcfile, getenv("HOME"), MAX_DIR_LEN);
+        strncat(rcfile, "/", MAX_DIR_LEN - strlen(rcfile));
+        strncat(rcfile, RC_NAME, MAX_DIR_LEN - strlen(rcfile));
+        if (access(rcfile, F_OK) == 0) // source this file if it exists
+            feval(rcfile, cmdstr, cmdargs);
+    }
+
     // now the commands can actually start being processed
     if (argc > 1) // we have a file to run
     {

@@ -64,6 +64,9 @@ SHELL BUILTIN COMMANDS
         Toggle whether the long path is shown in the prompt. When on, as in the default, the absolute pathname of PWD is shown.
         When off, only the name of the current directory is shown.
     
+    source <filename>
+        Sources filename. Sourcing means every line of the file is executed by msh, with changes persisting to the current session.
+    
 SHELL OPERATORS
     The following operators have varying functions and as such may have different grammatical rules.
     It is safe to assume by default that an operator must be separated from surrounding arguments with spaces, and that they can appear at any
@@ -134,6 +137,9 @@ I/O REDIRECTION
 
     msh provides operators to redirect the three standard streams - STDIN, STDOUT and STDERR. Storing the outputs of commands is powerful
     and convenient, and advanced users are encouraged to exploit it.
+
+CONFIGURING THE SHELL
+    Upon startup, msh sources the file at $HOME/.mshrc. This can be useful if the user wishes to enable certain options like lpath.
 
 REFERENCES
     [1] Ramey, C. (2011). The Bourne-Again Shell. The Architecture of Open Source Applications.

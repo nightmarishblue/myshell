@@ -118,17 +118,18 @@ int cleanargs(char* args[MAX_ARGS])
 }
 
 // concatenate an array of strings with a NULL terminator into a single, space separated string
-void concatstrs(char dest[], char* srcstrs[MAX_ARGS])
-{
-    int i = 0;
-    while (i < MAX_ARGS && srcstrs[i] && srcstrs[i + 1])
-    {
-        strcat(dest, srcstrs[i]);
-        strcat(dest, " ");
-        i++;
-    }
-    strcat(dest, srcstrs[i]);
-}
+// no longer storing this info
+// void concatstrs(char dest[], char* srcstrs[MAX_ARGS])
+// {
+//     int i = 0;
+//     while (i < MAX_ARGS && srcstrs[i] && srcstrs[i + 1])
+//     {
+//         strcat(dest, srcstrs[i]);
+//         strcat(dest, " ");
+//         i++;
+//     }
+//     strcat(dest, srcstrs[i]);
+// }
 
 int parsebackground(char* cmdargs[MAX_ARGS])
 {

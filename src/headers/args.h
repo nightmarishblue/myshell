@@ -28,7 +28,8 @@ int parseioredirects(char* args[MAX_ARGS]);
 int cleanargs(char* args[MAX_ARGS]);
 
 // concatenate an array of NULL-terminated strings into a single, space separated string
-void concatstrs(char dest[], char* srcstrs[MAX_ARGS]);
+// unneeded
+// void concatstrs(char dest[], char* srcstrs[MAX_ARGS]);
 
 // parse the & at the end of the command
 // cmdargs is an array of strings terminated by NULL

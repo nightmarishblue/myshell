@@ -49,7 +49,7 @@ int main(int argc, char* argv[argc])
     }
 
     // argument data
-    char cmdstr[MAX_CMD_LEN], argbuff[MAX_CMD_LEN]; // create a buffer to store inputted commands
+    char cmdstr[MAX_CMD_LEN]; // create a buffer to store inputted commands
     // create an array of strings to hold each parsed arg, plus the NULL at the end
     char* cmdargs[MAX_ARGS + 1];
     
@@ -71,78 +71,77 @@ int main(int argc, char* argv[argc])
         input = stdin;
     }
 
-    while (1)
-    {
-        // the 5 steps of the shell's loop
-        // 1. print the prompt
-        if (interactive) printprompt();
-
-        // 2. wait for the user to type something, and split it into a list of args
-        fgets(cmdstr, MAX_CMD_LEN, input); // grab a line from stdin
-        strncpy(argbuff, cmdstr, MAX_CMD_LEN); // cmdstr holds the unbroken string
-        // split that line into args - argbuff holds the strings in cmdargs
-        splitargs(argbuff, cmdargs);
-
-        // 3. make sure the user hasn't closed the shell or put in an empty string
-        if (feof(input)) exit(0);
-        if (cmdargs[0] == NULL) continue; // stop if we somehow have no args
-
-        // 4. check if the last arg is & - we should background process if it is, and wipe it from the list
-        int shouldwait = !parsebackground(cmdargs);
-
-        // 5A. figure out whether the command is a builtin - if so, we shouldn't fork
-        int builtin = parsebuiltin(cmdargs[0]);
-        if (builtin != -1)
-        {
-            // redirect this process's output
-            if (parseioredirects(cmdargs)) // remove all the redirections from the cmdstring
-            {
-                cleanargs(cmdargs);
-                concatstrs(cmdstr, cmdargs);
-            }
-
-            expandvars(cmdargs);
-            runbuiltin(builtin, cmdargs);
-
-            restoreio(); // restore the io, since this is still our parent process
-            continue;
-        }
-
-        // 5B. else fork the program and try to serve the command
-        int pid, status;
-        switch (pid = fork())
-        {
-            case -1:
-                perror("msh: could not fork process: ");
-                // exit(errno); // this is not a breaking error that requires the shell to stop
-                break;
-            case 0: // fork was successful, this is the child
-                // check if the user is redirecting - we need not restore the io state as the child will die
-                if (parseioredirects(cmdargs))
-                {
-                    cleanargs(cmdargs);
-                    concatstrs(cmdstr, cmdargs);
-                }
-
-                expandvars(cmdargs);
-                putenv(parentenv); // ensure the child has the correct parent
-
-                execvp(cmdargs[0], cmdargs); // replace the process with the desired program
-                fprintf(stderr, "msh: could not exec '%s': ", cmdargs[0]);
-                perror(""); // this is only reached on error
-                exit(EXIT_FAILURE + 2); // make sure we exit in that case
-                break;
-            default:
-                if (shouldwait) 
-                {
-                    waitpid(pid, &status, WUNTRACED);
-                } else
-                {
-                    printf("& %d\n", pid);
-                }
-                break;
-        }
-    }
+    do {
+        if (interactive)
+            printprompt();
+    } while (getrunline(input, cmdstr, cmdargs));
 
     return 0;
+}
+
+int getrunline(FILE* input, char cmdstr[MAX_CMD_LEN], char* cmdargs[MAX_ARGS + 1])
+{
+    // the 5 steps of the shell's loop
+    // 1. get input and then split it into lines
+    fgets(cmdstr, MAX_CMD_LEN, input);     // grab a line from stdin
+    // split that line into args
+    splitargs(cmdstr, cmdargs);
+
+    // 2. make sure the user hasn't closed the shell or put in an empty string
+    if (feof(input))
+        return 0;
+    if (cmdargs[0] == NULL)
+        return 1; // stop if we somehow have no args
+
+    // 4. check if the last arg is & - we should background process if it is, and wipe it from the list
+    int shouldwait = !parsebackground(cmdargs);
+
+    // 5A. figure out whether the command is a builtin - if so, we shouldn't fork
+    int builtin = parsebuiltin(cmdargs[0]);
+    if (builtin != -1)
+    {
+        // redirect this process's output
+        if (parseioredirects(cmdargs))
+            cleanargs(cmdargs); // remove all the redirections from the cmd args
+
+        expandvars(cmdargs);
+        runbuiltin(builtin, cmdargs);
+
+        restoreio(); // restore the io, since this is still our parent process
+        return 1;
+    }
+
+    // 5B. else fork the program and try to serve the command
+    int pid, status;
+    switch (pid = fork())
+    {
+    case -1:
+        perror("msh: could not fork process: ");
+        // exit(errno); // this is not a breaking error that requires the shell to stop
+        break;
+    case 0: // fork was successful, this is the child
+        // check if the user is redirecting - we need not restore the io state as the child will die
+        if (parseioredirects(cmdargs))
+            cleanargs(cmdargs);
+
+        expandvars(cmdargs);
+        putenv(parentenv); // ensure the child has the correct parent
+
+        execvp(cmdargs[0], cmdargs); // replace the process with the desired program
+        fprintf(stderr, "msh: could not exec '%s': ", cmdargs[0]);
+        perror("");             // this is only reached on error
+        exit(EXIT_FAILURE + 2); // make sure we exit in that case
+        break;
+    }
+
+    if (shouldwait)
+    {
+        waitpid(pid, &status, WUNTRACED);
+    }
+    else
+    {
+        printf("& %d\n", pid);
+    }
+
+    return 1;
 }

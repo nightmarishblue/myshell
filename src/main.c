@@ -16,6 +16,9 @@
 
 // the external chars that are used by various parts of msh
 
+char cmdstr[MAX_CMD_LEN];
+char* cmdargs[MAX_ARGS + 1];
+
 char cwdenv[MAX_DIR_LEN + 4] = "PWD=";
 char* cwd = cwdenv + 4;
 
@@ -48,33 +51,18 @@ int main(int argc, char* argv[argc])
         exit(EXIT_FAILURE); // should exit for safety
     }
 
-    // argument data
-    char cmdstr[MAX_CMD_LEN]; // create a buffer to store inputted commands
-    // create an array of strings to hold each parsed arg, plus the NULL at the end
-    char* cmdargs[MAX_ARGS + 1];
-    
-    FILE* input; // the iostream to pull our commands from
-    int interactive = 1;
+    // now the commands can actually start being processed
     if (argc > 1) // we have a file to run
     {
-        interactive = 0;
-        char* filename = argv[1];
-        input = fopen(filename, "r");
-        if (input == NULL)
-        {
-            fprintf(stderr, "msh: could not open file '%s': ", filename);
-            perror("");
-            exit(EXIT_FAILURE + 1);
-        }
-    } else
-    {
-        input = stdin;
+        if (!feval(argv[1], cmdstr, cmdargs))
+            exit(EXIT_FAILURE);
     }
-
-    do {
-        if (interactive)
-            printprompt();
-    } while (getrunline(input, cmdstr, cmdargs));
+    else
+    {
+        do {
+                printprompt();
+        } while (getrunline(stdin, cmdstr, cmdargs));
+    }
 
     return 0;
 }
@@ -143,5 +131,20 @@ int getrunline(FILE* input, char cmdstr[MAX_CMD_LEN], char* cmdargs[MAX_ARGS + 1
         printf("& %d\n", pid);
     }
 
+    return 1;
+}
+
+int feval(char* filename, char cmdstr[MAX_CMD_LEN], char* cmdargs[MAX_ARGS + 1])
+{
+    FILE* input = fopen(filename, "r"); // attempt to read file
+    if (input == NULL)
+    {
+        fprintf(stderr, "msh: could not open file '%s': ", filename);
+        perror("");
+        return 0;
+    }
+    // attempt to open the file
+    while (getrunline(input, cmdstr, cmdargs));
+    fclose(input);
     return 1;
 }

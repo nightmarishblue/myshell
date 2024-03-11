@@ -25,3 +25,7 @@ extern int longpath; // tracks whether or not the shell should display the full 
 // get a line from an input source and perform the evaluation
 // returns false at EOF, when the shell is normally expected to close
 int getrunline(FILE* input, char cmdstr[MAX_CMD_LEN], char* cmdargs[MAX_ARGS + 1]);
+
+// evaluate the contents of filename
+// return false if filename couldn't be opened
+int feval(char* filename, char cmdstr[MAX_CMD_LEN], char* cmdargs[MAX_ARGS + 1]);

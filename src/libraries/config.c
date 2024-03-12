@@ -60,6 +60,36 @@ int cntwrds(char* string)
     return len;
 }
 
+// given a string, expand it into a char** of its words on the heap
+// returns NULL if the operation failed - there is nothing for the caller to free in that case
+// note that the string (char**[0]) and the array itself (char**) must both be freed
+char** mbrkwrds(char* string)
+{
+    char* mstring = dupwerr(string);
+    if (mstring == NULL)
+        return NULL;
+
+    int wordc = cntwrds(mstring);
+    char** arr = malloc(wordc * sizeof(char*));
+    if (arr == NULL)
+    {
+        fprintf(stderr, "msh: could not allocate heap memory for the words of '%s'", mstring);
+        free(mstring);
+        return NULL;
+    }
+
+    // populate the array
+    wordc = 0; // don't need this anymore
+    char* tok = strtok(mstring, ARG_WHITESPACE);
+    while (tok != NULL)
+    {
+        arr[wordc++] = tok;
+        tok = strtok(NULL, ARG_WHITESPACE);
+    }
+
+    return arr;
+}
+
 int idalias(char* name)
 {
     for (int i = 0; i < aliaslen; i++)
@@ -84,31 +114,10 @@ int pshalias(char* input, char* output)
     if (name == NULL)
         return 0;
 
-    char* expans = dupwerr(output); // the expansion of the alias - will be broken by strtok
-    if (expans == NULL)
-    {
-        free(name);
+    char** expansargs = mbrkwrds(output);
+    if (expansargs == NULL)
         return 0;
-    }
-
-    // figure out how big the expansion should be as a set of args
-    int arglen = cntwrds(expans);
-    char** args = malloc(arglen * sizeof(char*));
-    if (args == NULL)
-    {
-        perror("msh: could not allocate space for alias expansion");
-        free(name); free(expans);
-        return 0;
-    }
-
-    // we can also populate the args now (the code might fail later but it is more readable this way)
-    int index = 0;
-    char* tok = strtok(expans, ARG_WHITESPACE);
-    while (tok != NULL)
-    {
-        args[index++] = tok;
-        tok = strtok(NULL, ARG_WHITESPACE);
-    }
+    int arglen = cntwrds(output);
 
     // now a new alias must be memory allocated too
     if (aliaslen < 1) // if no aliases have been made, we must allocate the new array
@@ -117,7 +126,7 @@ int pshalias(char* input, char* output)
         if (aliases == NULL)
         {
             perror("msh: could not allocate space for alias");
-            free(name); free(expans); free(args);
+            free(name); free(expansargs[0]); free(expansargs);
             return 0;
         }
 
@@ -136,7 +145,7 @@ int pshalias(char* input, char* output)
     if (new == NULL) // make sure to handle the case of an error happening
     {
         perror("msh: could not allocate space for alias");
-        free(name); free(expans);
+        free(name); free(expansargs[0]); free(expansargs);
         return 0;
     }
 
@@ -145,7 +154,7 @@ int pshalias(char* input, char* output)
 
     new->name = name;
     new->arglen = arglen;
-    new->expargs = args;
+    new->expargs = expansargs;
     return 1;
 }
 

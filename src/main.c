@@ -59,7 +59,6 @@ int main(int argc, char* argv[argc])
     // get the manual location
     strncpy(manloc, shell, MAX_DIR_LEN);
     strcpy(strrchr(manloc, '/') + 1, MAN_NAME); // we will chop off the filename and replace it with readme
-    printf("%s\n", manloc);
     // aware of the danger here.
 
     if (getcwd(cwd, MAX_DIR_LEN) == NULL || putenv(cwdenv) != 0)
@@ -123,6 +122,11 @@ int getrunline(FILE* input, char cmdstr[MAX_CMD_LEN], char* cmdargs[MAX_ARGS + 1
         expandvars(cmdargs);
         runbuiltin(builtin, cmdargs);
 
+        // set $_ to the last arg
+        int arglen = 0;
+        while (cmdargs[arglen]) arglen++;
+        setenv("_", cmdargs[arglen - 1], 1);
+
         restoreio(); // restore the io, since this is still our parent process
         return 1;
     }
@@ -146,9 +150,22 @@ int getrunline(FILE* input, char cmdstr[MAX_CMD_LEN], char* cmdargs[MAX_ARGS + 1
         execvp(cmdargs[0], cmdargs); // replace the process with the desired program
         fprintf(stderr, "msh: could not exec '%s': ", cmdargs[0]);
         perror("");             // this is only reached on error
-        exit(EXIT_FAILURE + 2); // make sure we exit in that case
+        exit(EXIT_FAILURE); // make sure we exit in that case
         break;
     }
+
+    // don't forget to set $_ - we could have used a pipe but this requires less i/o
+    // also considered "queueing" I/O operations so that we know what cmdargs looks like in the parent
+    // either way, we have to wait on the child anyway so we may as well do it here
+    int arglen = 0;
+    while (cmdargs[arglen] && cmdargs[arglen + 1]) arglen++;
+    while (arglen > 0 && getioop(cmdargs[arglen - 1]))
+    {
+        arglen -= 2;
+    }
+    if (arglen < 0)
+        arglen = 0;
+    setenv("_", cmdargs[arglen], 1);
 
     if (shouldwait)
     {

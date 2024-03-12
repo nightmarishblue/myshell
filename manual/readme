@@ -90,6 +90,8 @@ SHELL OPERATORS
     $<variable>
         When an argument begins with the sign $, the rest of the argument is taken to be the name of an environment variable. msh will find
         that variable's value and replace this argument with it. If that variable is not set, the argument is untouched (for now).
+        Note that msh currently can only expand a variable if it is the entire argument.
+        Commands such as "echo lpath > $HOME/.mshrc" will not work.
 
 THE SHELL ENVIRONMENT
     Programs in UNIX need a way to communicate with each other in order to share configs and other data.
@@ -112,7 +114,7 @@ THE SHELL ENVIRONMENT
         
         - _
             Yes, that is an underscore. You would reference this as "$_" when writing commands. It expands to the last argument of the last
-            inputted command. This is much more useful than you would think (or it would be, if msh implemented it yet - most shells do).
+            inputted command. This is much more useful than you would think.
 
 
 PROCESSES AND EXECUTION

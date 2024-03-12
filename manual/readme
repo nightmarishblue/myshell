@@ -67,6 +67,15 @@ SHELL BUILTIN COMMANDS
     source <filename>
         Sources filename. Sourcing means every line of the file is executed by msh, with changes persisting to the current session.
     
+    putenv <name> <value>
+        Place the environment variable name=value into the shell's environment. An empty string can be supplied to value.
+        Note that this has a distinct effect from simply unsetting the variable. For that, use clrenv.
+        See THE SHELL ENVIRONMENT for more details on how to use environment variables.
+    
+    clrenv <name>
+        Clear the environment variable with the given name from the environment.
+        See THE SHELL ENVIRONMENT for more details on how to use environment variables.
+
 SHELL OPERATORS
     The following operators have varying functions and as such may have different grammatical rules.
     It is safe to assume by default that an operator must be separated from surrounding arguments with spaces, and that they can appear at any
@@ -141,7 +150,8 @@ I/O REDIRECTION
     and convenient, and advanced users are encouraged to exploit it.
 
 CONFIGURING THE SHELL
-    Upon startup, msh sources the file at $HOME/.mshrc. This can be useful if the user wishes to enable certain options like lpath.
+    Upon startup, msh sources the file at "$HOME/.mshrc". This can be useful if the user wishes to enable certain options like lpath.
+    Environment variables can also be defined with putenv.
 
 REFERENCES
     [1] Ramey, C. (2011). The Bourne-Again Shell. The Architecture of Open Source Applications.

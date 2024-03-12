@@ -41,8 +41,8 @@ const builtin allbuiltins[] = {
     {"help", help}, // unfinished
     // some extra builtins i have added
     {"lpath", lpath},
-    {"penv", penv},
-    {"cenv", cenv},
+    {"putenv", penv},
+    {"clrenv", cenv},
     {"source", source},
 };
 

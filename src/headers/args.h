@@ -56,3 +56,6 @@ int parsebackground(char* cmdargs[MAX_ARGS]);
 // note that the assigned pointers lead to memory that may not belong to msh - take care
 // if a request variable like TERM isn't set, it will remain as $TERM
 void expandvars(char* cmdargs[MAX_ARGS]);
+
+// if the first arg is an alias, expand it
+void expandalias(char* cmdargs[MAX_ARGS]);

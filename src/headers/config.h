@@ -44,5 +44,5 @@ void freealiases();
 const alias* getalias(int index);
 
 // identify an alias by name
-// returns its index
+// returns its index or -1 if no registered alias has that name
 int idalias(char* name);

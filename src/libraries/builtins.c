@@ -278,7 +278,6 @@ int aliascmd(char* args[MAX_ARGS])
     if (input && !output)
     {
         fprintf(stderr, "alias: provide 0 or 2 arguments\n");
-        freealiases();
         return EXIT_FAILURE;
     }
 

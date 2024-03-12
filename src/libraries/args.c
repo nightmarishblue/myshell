@@ -19,6 +19,7 @@ ACKNOWLEDGEMENTS
 #include "../headers/args.h"
 #include "../headers/builtins.h"
 #include "../headers/io.h"
+#include "../headers/config.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -169,4 +170,34 @@ void expandvars(char* cmdargs[MAX_ARGS])
         }
         i++;
     }
+}
+
+void expandalias(char* cmdargs[MAX_ARGS])
+{
+    char* cmd = cmdargs[0];
+    int aliasid = idalias(cmd);
+    if (aliasid == -1)
+        return; // exit if this isn't an alias
+    
+    // otherwise, we must shift up the array by a certain amount
+    const alias* expans = getalias(aliasid);
+    int i = 0;
+    while (cmdargs[i] != NULL) i++;
+    
+    // if we don't have the space to expand this array, we should exit and avoid an overflow
+    if (i + expans->arglen - 1 >= MAX_ARGS)
+    {
+        fprintf(stderr, "msh: could not expand alias '%s' - too many arguments in command", cmd);
+        return;
+    }
+
+    // shift up the arguments
+    while (i > 0)
+    {
+        cmdargs[i + expans->arglen - 1] = cmdargs[i];
+        i--;
+    }
+    
+    for (i = 0; i < expans->arglen; i++)
+        cmdargs[i] = expans->expargs[i]; // alter the command
 }

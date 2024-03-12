@@ -108,6 +108,7 @@ int getrunline(FILE* input, char cmdstr[MAX_CMD_LEN], char* cmdargs[MAX_ARGS + 1
 
     // 4. check if the last arg is & - we should background process if it is, and wipe it from the list
     int shouldwait = !parsebackground(cmdargs);
+    expandalias(cmdargs);
 
     // 5A. figure out whether the command is a builtin - if so, we shouldn't fork
     int builtin = parsebuiltin(cmdargs[0]);

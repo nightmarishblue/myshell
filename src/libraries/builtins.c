@@ -65,8 +65,8 @@ int runbuiltin(int index, char* args[MAX_ARGS])
 
 int quit(char* args[MAX_ARGS])
 {
-    exit(0);
-    return EXIT_SUCCESS;
+    quitshell(EXIT_SUCCESS);
+    return EXIT_SUCCESS; // never reached
 }
 
 int clear(char* args[MAX_ARGS])
@@ -181,7 +181,7 @@ int help(char* args[MAX_ARGS])
             execlp(pager, pager, MAN_NAME, NULL);
             fprintf(stderr, "help: could not exec %s: ", pager);
             perror("");
-            exit(EXIT_FAILURE + 2); // kill the child
+            quitshell(EXIT_FAILURE + 2); // kill the child
             break;
     }
 

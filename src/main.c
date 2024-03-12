@@ -61,7 +61,7 @@ int main(int argc, char* argv[argc])
     if (getcwd(cwd, MAX_DIR_LEN) == NULL || putenv(cwdenv) != 0)
     {
         perror("msh: could not correctly set PWD: ");
-        exit(EXIT_FAILURE); // should exit for safety
+        quitshell(EXIT_FAILURE); // should exit for safety
     }
 
     // try to source the user's ~/.mshrc
@@ -79,7 +79,7 @@ int main(int argc, char* argv[argc])
     if (argc > 1) // we have a file to run
     {
         if (!feval(argv[1], cmdstr, cmdargs))
-            exit(EXIT_FAILURE);
+            quitshell(EXIT_FAILURE);
     }
     else
     {
@@ -136,7 +136,7 @@ int getrunline(FILE* input, char cmdstr[MAX_CMD_LEN], char* cmdargs[MAX_ARGS + 1
     {
     case -1:
         perror("msh: could not fork process: ");
-        // exit(errno); // this is not a breaking error that requires the shell to stop
+        // quitshell(errno); // this is not a breaking error that requires the shell to stop
         break;
     case 0: // fork was successful, this is the child
         // check if the user is redirecting - we need not restore the io state as the child will die
@@ -149,7 +149,7 @@ int getrunline(FILE* input, char cmdstr[MAX_CMD_LEN], char* cmdargs[MAX_ARGS + 1
         execvp(cmdargs[0], cmdargs); // replace the process with the desired program
         fprintf(stderr, "msh: could not exec '%s': ", cmdargs[0]);
         perror("");             // this is only reached on error
-        exit(EXIT_FAILURE); // make sure we exit in that case
+        quitshell(EXIT_FAILURE); // make sure we exit in that case
         break;
     }
 
@@ -191,4 +191,10 @@ int feval(char* filename, char cmdstr[MAX_CMD_LEN], char* cmdargs[MAX_ARGS + 1])
     while (getrunline(input, cmdstr, cmdargs));
     fclose(input);
     return 1;
+}
+
+void quitshell(int status)
+{
+    freealiases();
+    exit(status);
 }

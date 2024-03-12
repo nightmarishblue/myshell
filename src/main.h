@@ -48,3 +48,6 @@ int getrunline(FILE* input, char cmdstr[MAX_CMD_LEN], char* cmdargs[MAX_ARGS + 1
 // evaluate the contents of filename
 // return false if filename couldn't be opened
 int feval(char* filename, char cmdstr[MAX_CMD_LEN], char* cmdargs[MAX_ARGS + 1]);
+
+// perform necessary cleanup and quit the shell
+void quitshell(int status);

@@ -69,3 +69,6 @@ int cenv(char* args[MAX_ARGS]);
 
 // evaluate the contents of the file with name args[0]
 int source(char* args[MAX_ARGS]);
+
+// evaluate the contents of the file with name args[0]
+int aliascmd(char* args[MAX_ARGS]);

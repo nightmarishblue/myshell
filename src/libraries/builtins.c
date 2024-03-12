@@ -45,6 +45,7 @@ const builtin allbuiltins[] = {
     {"putenv", penv},
     {"clrenv", cenv},
     {"source", source},
+    {"alias", aliascmd},
 };
 
 const int numbuiltins = sizeof(allbuiltins) / sizeof(builtin); 
@@ -253,4 +254,33 @@ int source(char* args[MAX_ARGS])
     }
     // defer to feval - the builtin args pointer isn't good enough for this
     return !feval(filename, cmdstr, cmdargs);
+}
+
+int aliascmd(char* args[MAX_ARGS])
+{
+    char* input = args[0], *output = args[1];
+
+    if (input == NULL) // no args given, print all aliases
+    {
+        int i = 0;
+        const alias* curr;
+        while ((curr = getalias(i++)))
+        {
+            printf("%s=", curr->name);
+            for (int j = 0; j < curr->arglen - 1; j++)
+                printf("%s ", curr->expargs[j]);
+            printf("%s\n", curr->expargs[curr->arglen - 1]);
+        }
+        return EXIT_SUCCESS;
+    }
+
+    // only one arg - not valid
+    if (input && !output)
+    {
+        fprintf(stderr, "alias: provide 0 or 2 arguments\n");
+        freealiases();
+        return EXIT_FAILURE;
+    }
+
+    return !pshalias(input, output);
 }

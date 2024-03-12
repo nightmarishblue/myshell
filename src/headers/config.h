@@ -46,3 +46,12 @@ const alias* getalias(int index);
 // identify an alias by name
 // returns its index or -1 if no registered alias has that name
 int idalias(char* name);
+
+// deallocate the elements of the alias at the given index and mark it as open for replacement
+// return false if the requested alias doesn't exist
+// sets the name to NULL
+int clralias(int index);
+
+// replace an alias's expansion with something else
+// on a failure, return false and leave the alias unchanged
+int replalias(int index, char* expans);

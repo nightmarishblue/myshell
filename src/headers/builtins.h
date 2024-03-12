@@ -70,5 +70,9 @@ int cenv(char* args[MAX_ARGS]);
 // evaluate the contents of the file with name args[0]
 int source(char* args[MAX_ARGS]);
 
-// evaluate the contents of the file with name args[0]
+// alias the command arg[1] to the shortcut arg[0]
+// print all current aliases if no args given
 int aliascmd(char* args[MAX_ARGS]);
+
+// remove the alias at arg[0]
+int dealias(char* args[MAX_ARGS]);

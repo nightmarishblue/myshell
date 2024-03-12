@@ -39,7 +39,7 @@ char* dupwerr(char* string)
     char* new = strdup(string);
     if (new == NULL)
     {
-        fprintf(stderr, "msh: could not allocate heap memory for '%s': ", string);
+        fprintf(stderr, "msh: could not allocate heap memory for the string '%s': ", string);
         perror("");
     }
     return new;
@@ -95,7 +95,7 @@ int idalias(char* name)
     for (int i = 0; i < aliaslen; i++)
     {
         alias* curr = aliases + i;
-        if (curr == NULL) continue;
+        if (curr == NULL || curr->name == NULL) continue;
         if (strcmp(curr->name, name) == 0) return i;
     }
     return -1;
@@ -105,6 +105,21 @@ const alias* getalias(int index)
 {
     if (index < 0 || index >= aliaslen) return NULL;
     return aliases + index;
+}
+
+// set the contents of an empty alias to something new
+// the name and expansions must be on the heap already
+// return false if this target is not valid
+int setalias(int index, char* name, int arglen, char** expargs)
+{
+    alias* target = (alias*) getalias(index); // must cast to mutate
+    if (target == NULL || target->name != NULL)
+        return 0;
+
+    target->name = name;
+    target->expargs = expargs;
+    target->arglen = arglen;
+    return 1;
 }
 
 int pshalias(char* input, char* output)
@@ -134,9 +149,28 @@ int pshalias(char* input, char* output)
         alias* new = aliases;
         new->name = name;
         new->arglen = arglen;
-        new->expargs = args;
+        new->expargs = expansargs;
         
         aliaslen++;
+        return 1;
+    }
+
+    // otherwise, try to find an open or cleared slot
+    int validid = -1;
+    for (int i = 0; i < aliaslen; i++)
+    {
+        alias* curr = aliases + i;
+        if (curr->name == NULL)
+        {
+            validid = i;
+            break;
+        }
+    }
+
+    // if we found one, we can set the contents of it now
+    if (validid != -1)
+    {
+        setalias(validid, name, arglen, expansargs);
         return 1;
     }
 
@@ -155,6 +189,37 @@ int pshalias(char* input, char* output)
     new->name = name;
     new->arglen = arglen;
     new->expargs = expansargs;
+    return 1;
+}
+
+int clralias(int index)
+{
+    alias* target = (alias*) getalias(index); // we are going to mutate this
+    if (target == NULL)
+        return 0;
+
+    free(target->name); free(target->expargs[0]); free(target->expargs); // deallocate everything
+
+    target->name = NULL; // this will mark the alias as cleared
+
+    return 1;
+}
+
+int replalias(int index, char* expans)
+{
+    alias* target = (alias*) getalias(index);
+    if (target == NULL)
+        return 0;
+
+    // memory allocate the new contents of the array's expansion
+    char** expansargs = mbrkwrds(expans);
+    if (expansargs == NULL)
+        return 0;
+    int arglen = cntwrds(expans);
+
+    free(target->expargs[0]); free(target->expargs);
+    target->arglen = arglen;
+    target->expargs = expansargs;
     return 1;
 }
 

@@ -46,6 +46,7 @@ const builtin allbuiltins[] = {
     {"clrenv", cenv},
     {"source", source},
     {"alias", aliascmd},
+    {"dealias", dealias},
 };
 
 const int numbuiltins = sizeof(allbuiltins) / sizeof(builtin); 
@@ -266,6 +267,9 @@ int aliascmd(char* args[MAX_ARGS])
         const alias* curr;
         while ((curr = getalias(i++)))
         {
+            if (curr->name == NULL) // if this slot is empty, skip it
+                continue;
+
             printf("%s=", curr->name);
             for (int j = 0; j < curr->arglen - 1; j++)
                 printf("%s ", curr->expargs[j]);
@@ -278,8 +282,48 @@ int aliascmd(char* args[MAX_ARGS])
     if (input && !output)
     {
         fprintf(stderr, "alias: provide 0 or 2 arguments\n");
-        return EXIT_FAILURE;
+        return EXIT_FAILURE + 1;
+    }
+
+    // warn the user that they probably shouldn't alias dealias
+    if (strcmp(input, "dealias") == 0 && (args[2] == NULL || strcmp(args[2], "-y") != 0))
+    {
+        printf("alias: you probably should not alias delias - use 'alias dealias %s -y' if you think you know better\n", output);
+        return EXIT_FAILURE + 2;
+    }
+
+    // if the alias already exists, rewrite it
+    int id = idalias(input);
+    if (id != -1)
+    {
+        if (!replalias(id, output))
+        {
+            fprintf(stderr, "alias: could not alter value of alias '%s' - left unchanged\n", input);
+            return EXIT_FAILURE + 3;
+        }
+        return EXIT_SUCCESS;
     }
 
     return !pshalias(input, output);
+}
+
+int dealias(char* args[MAX_ARGS])
+{
+    char* name = args[0];
+    if (name == NULL)
+    {
+        freealiases();
+        return EXIT_SUCCESS;
+    }
+
+    int id = idalias(name);
+    if (id == -1)
+    {
+        fprintf(stderr, "dealias: '%s' is not an alias\n", name);
+        return EXIT_FAILURE;
+    }
+
+    clralias(id);
+
+    return EXIT_FAILURE;
 }

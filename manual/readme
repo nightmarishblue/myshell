@@ -76,6 +76,15 @@ SHELL BUILTIN COMMANDS
         Clear the environment variable with the given name from the environment.
         See THE SHELL ENVIRONMENT for more details on how to use environment variables.
 
+    alias [<shortcut> <command>]
+        Creates an alias or shortcut for the given command, as in "alias ll 'ls -l'". When msh next encounters the command ll, it will
+        expand it to the words "ls -l" before continuing processing. Note that while the command can comprise multiple words, the shortcut cannot.
+
+        If no arguments are given, alias will print out all of the user's aliases in the format shortcut=command.
+    
+    dealias [shortcut]
+        Clears the given shortcut, rendering its behaviour back to how it was before aliasing. With no arguments, dealias clears all aliases.
+
 SHELL OPERATORS
     The following operators have varying functions and as such may have different grammatical rules.
     It is safe to assume by default that an operator must be separated from surrounding arguments with spaces, and that they can appear at any
@@ -150,8 +159,8 @@ I/O REDIRECTION
     and convenient, and advanced users are encouraged to exploit it.
 
 CONFIGURING THE SHELL
-    Upon startup, msh sources the file at "$HOME/.mshrc". This can be useful if the user wishes to enable certain options like lpath.
-    Environment variables can also be defined with putenv.
+    Upon startup, msh sources the file at "$HOME/.mshrc". This can be useful if the user wishes to enable certain options like
+    lpath, or to set up their preferred aliases. Environment variables can also be defined with putenv.
 
 REFERENCES
     [1] Ramey, C. (2011). The Bourne-Again Shell. The Architecture of Open Source Applications.

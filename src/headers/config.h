@@ -14,7 +14,9 @@ ACKNOWLEDGEMENTS
     others save and to the extent that such work has been cited and acknowledged within the text of my work.
 */
 
-// contains functions for printing the prompt
-// not much in the way of arguments, since most of this is environment data and options
+// contains the logic behind msh's configurable elements
+
+// msh doesn't have much in the way of options - until now
+extern int longpath; // tracks whether or not the shell should display the full path in its prompt
 
 void printprompt();

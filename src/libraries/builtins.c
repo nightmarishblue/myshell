@@ -18,6 +18,7 @@ ACKNOWLEDGEMENTS
 #include "../headers/builtins.h"
 
 #include "../headers/args.h"
+#include "../headers/config.h"
 #include "../main.h"
 
 #include <stdio.h>

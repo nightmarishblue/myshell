@@ -19,7 +19,7 @@ ACKNOWLEDGEMENTS
 #include "./headers/args.h"
 #include "./headers/builtins.h"
 #include "./headers/io.h"
-#include "./headers/prompt.h"
+#include "./headers/config.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -44,9 +44,6 @@ char* shell = shellenv + 6;
 char parentenv[MAX_DIR_LEN + 7] = "PARENT=";
 
 char manloc[MAX_DIR_LEN + 7];
-
-// the shell options
-int longpath = 1;
 
 int main(int argc, char* argv[argc])
 {
@@ -86,8 +83,9 @@ int main(int argc, char* argv[argc])
     }
     else
     {
-        do {
-                printprompt();
+        do
+        {
+            printprompt();
         } while (getrunline(stdin, cmdstr, cmdargs));
     }
 

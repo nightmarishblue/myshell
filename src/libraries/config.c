@@ -14,10 +14,15 @@ ACKNOWLEDGEMENTS
     others save and to the extent that such work has been cited and acknowledged within the text of my work.
 */
 
+#include "../headers/config.h"
+
 #include "../main.h"
 
 #include <stdio.h>
 #include <string.h>
+
+// the shell options
+int longpath = 1;
 
 void printprompt()
 {

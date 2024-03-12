@@ -41,9 +41,6 @@ extern char* shell; // points to the string contains msh's path
 
 #define RC_NAME ".mshrc"
 
-// msh doesn't have much in the way of options - until now
-extern int longpath; // tracks whether or not the shell should display the full path in its prompt
-
 // get a line from an input source and perform the evaluation
 // returns false at EOF, when the shell is normally expected to close
 int getrunline(FILE* input, char cmdstr[MAX_CMD_LEN], char* cmdargs[MAX_ARGS + 1]);

@@ -34,6 +34,8 @@ ACKNOWLEDGEMENTS
 
 char cmdstr[MAX_CMD_LEN];
 char* cmdargs[MAX_ARGS + 1];
+char cmdhist[HIST_LEN][MAX_CMD_LEN] = {0};
+int histlen = 0; // an index for the circular array
 
 char cwdenv[MAX_DIR_LEN + 4] = "PWD=";
 char* cwd = cwdenv + 4;
@@ -102,6 +104,21 @@ int getrunline(FILE* input, char cmdstr[MAX_CMD_LEN], char* cmdargs[MAX_ARGS + 1
     // the 5 steps of the shell's loop
     // 1. get input and then split it into lines
     fgets(cmdstr, MAX_CMD_LEN, input);     // grab a line from stdin
+    
+    // 1.5. handle the last builtin - it is weird
+    if (strcspn(cmdstr, ARG_WHITESPACE) == 4 && strncmp(cmdstr, "last", 4) == 0)
+    {
+        splitargs(cmdstr, cmdargs); // perhaps could split only the first two arguments 
+        int i = last(cmdargs + 1);
+        if (i < 0)
+            return 1;
+        char* hist = gethist(histlen - i);
+        strncpy(cmdstr, hist, MAX_CMD_LEN);
+    } else
+    {
+        pshhist(cmdstr); // save this command in the history
+    }
+
     // split that line into args
     splitargs(cmdstr, cmdargs);
 
@@ -219,4 +236,18 @@ void reapzombies()
     {
         printf("-& %d (%d)\n", pid, status);
     }
+}
+
+void pshhist(char* cmd)
+{
+    char* histslot = cmdhist[histlen++]; // grab the slot to store this cmd in (and increment len)
+    strncpy(histslot, cmd, MAX_CMD_LEN); // copy it there
+    histlen %= HIST_LEN; // clamp it back to the array's range
+}
+
+char* gethist(int index)
+{
+    if (index < 0)
+        index = HIST_LEN - ((index * -1) % HIST_LEN); // C's modulo operator does not floor divide or something
+    return cmdhist[index % HIST_LEN];
 }

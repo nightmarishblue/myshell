@@ -76,3 +76,9 @@ int aliascmd(char* args[MAX_ARGS]);
 
 // remove the alias at arg[0]
 int dealias(char* args[MAX_ARGS]);
+
+// run the command X commands ago - last 1 runs the previous command
+// this one is SPECIAL - it is not handled like other builtins.
+// returns the number of elements to index backwards from the current length of hist
+// on a failure, returns negative
+int last(char* args[MAX_ARGS]);

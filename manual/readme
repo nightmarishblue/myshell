@@ -84,6 +84,12 @@ SHELL BUILTIN COMMANDS
     
     dealias [shortcut]
         Clears the given shortcut, rendering its behaviour back to how it was before aliasing. With no arguments, dealias clears all aliases.
+    
+    last [index]
+        Execute the last command, if index is not given. If index is given, the user can execute commands further back.
+        "last 2" will execute the command before the last, and so on and so forth. Note that msh has a limited amount of memory to store commands.
+
+        If last is called and the index given has no command stored in it, then last will silently do nothing.
 
 SHELL OPERATORS
     The following operators have varying functions and as such may have different grammatical rules.

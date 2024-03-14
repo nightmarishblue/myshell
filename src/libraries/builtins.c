@@ -327,3 +327,37 @@ int dealias(char* args[MAX_ARGS])
 
     return EXIT_FAILURE;
 }
+
+// this one is special - it is not handled like other builtins.
+// returns the integer that is the cmd to index hist for
+int last(char* args[MAX_ARGS])
+{
+    char* num = args[0];
+    int i = 1; // fall back on 1
+    if (num) // parse the inputted number if it is set
+    {
+        char* errptr = NULL;
+        errno = 0;
+        i = (int) strtol(num, &errptr, 10);
+        if (errptr == num || *errptr != '\0')
+        {
+            fprintf(stderr, "last: '%s' is not an integer\n", num);
+            return EXIT_FAILURE * -1;
+        }
+
+        if (errno != 0)
+        {
+            fprintf(stderr, "last: error occurred when coercing '%s' to integer: ", num);
+            perror("");
+            return (EXIT_FAILURE + 1) * -1;
+        }
+
+        if (i < 1 || i > HIST_LEN)
+        {
+            fprintf(stderr, "last: %d is not between 1 and %d\n", i, HIST_LEN);
+            return (EXIT_FAILURE + 2) * -2;
+        }
+    }
+
+    return i % HIST_LEN;
+}

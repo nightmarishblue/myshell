@@ -45,6 +45,8 @@ char parentenv[MAX_DIR_LEN + 7] = "PARENT=";
 
 char manloc[MAX_DIR_LEN + 7];
 
+void reapzombies(); // helper function to reap any shambling children and print their exit status
+
 int main(int argc, char* argv[argc])
 {
     // environment variables
@@ -85,6 +87,7 @@ int main(int argc, char* argv[argc])
     {
         do
         {
+            reapzombies();
             printprompt();
         } while (getrunline(stdin, cmdstr, cmdargs));
     }
@@ -94,6 +97,8 @@ int main(int argc, char* argv[argc])
 
 int getrunline(FILE* input, char cmdstr[MAX_CMD_LEN], char* cmdargs[MAX_ARGS + 1])
 {
+    // reap any existing zombies
+    reapzombies();
     // the 5 steps of the shell's loop
     // 1. get input and then split it into lines
     fgets(cmdstr, MAX_CMD_LEN, input);     // grab a line from stdin
@@ -139,6 +144,10 @@ int getrunline(FILE* input, char cmdstr[MAX_CMD_LEN], char* cmdargs[MAX_ARGS + 1
         // quitshell(errno); // this is not a breaking error that requires the shell to stop
         break;
     case 0: // fork was successful, this is the child
+        // if we shouldn't wait, then this goes to the background pg
+        if (!shouldwait)
+            setpgid(0, 0);
+
         // check if the user is redirecting - we need not restore the io state as the child will die
         if (parseioredirects(cmdargs))
             cleanargs(cmdargs);
@@ -172,7 +181,7 @@ int getrunline(FILE* input, char cmdstr[MAX_CMD_LEN], char* cmdargs[MAX_ARGS + 1
     }
     else
     {
-        printf("& %d\n", pid);
+        printf("+& %d\n", pid);
     }
 
     return 1;
@@ -188,6 +197,10 @@ int feval(char* filename, char cmdstr[MAX_CMD_LEN], char* cmdargs[MAX_ARGS + 1])
         return 0;
     }
     // attempt to open the file
+    do
+    {
+        reapzombies();
+    }
     while (getrunline(input, cmdstr, cmdargs));
     fclose(input);
     return 1;
@@ -197,4 +210,13 @@ void quitshell(int status)
 {
     freealiases();
     exit(status);
+}
+
+void reapzombies()
+{
+    int pid, status;
+    while ((pid = waitpid(-1, &status, WNOHANG)) > 0)
+    {
+        printf("-& %d (%d)\n", pid, status);
+    }
 }

@@ -47,6 +47,7 @@ const builtin allbuiltins[] = {
     {"source", source},
     {"alias", aliascmd},
     {"dealias", dealias},
+    {"pause", pause_builtin},
 };
 
 const int numbuiltins = sizeof(allbuiltins) / sizeof(builtin); 
@@ -360,4 +361,14 @@ int last(char* args[MAX_ARGS])
     }
 
     return i % HIST_LEN;
+}
+
+int pause_builtin(char* args[MAX_ARGS])
+{
+    while (getchar() != '\n')
+    {
+        if (feof(stdin)) // make sure to check for EOF
+            return EXIT_FAILURE;
+    }
+    return EXIT_SUCCESS;
 }

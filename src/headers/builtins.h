@@ -82,3 +82,6 @@ int dealias(char* args[MAX_ARGS]);
 // returns the number of elements to index backwards from the current length of hist
 // on a failure, returns negative
 int last(char* args[MAX_ARGS]);
+
+// pause the shell unter the user hits enter
+int pause_builtin(char* args[MAX_ARGS]);

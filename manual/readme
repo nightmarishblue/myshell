@@ -59,6 +59,9 @@ SHELL BUILTIN COMMANDS
     
     environ
         Print all environment variables in the form VARIABLE=VALUE.
+
+    pause
+        Suspend msh until the user presses enter.
     
     lpath
         Toggle whether the long path is shown in the prompt. When on, as in the default, the absolute pathname of PWD is shown.

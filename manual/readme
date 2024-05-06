@@ -171,7 +171,7 @@ CONFIGURING THE SHELL
     Upon startup, msh sources the file at "$HOME/.mshrc". This can be useful if the user wishes to enable certain options like
     lpath, or to set up their preferred aliases. Environment variables can also be defined with putenv.
 
-REFERENCES
+REFERENCES (this was mandatory for the assignment)
     [1] Ramey, C. (2011). The Bourne-Again Shell. The Architecture of Open Source Applications.
 
     [2] Kernighan, B. W. (1978). UNIX for Beginners (Vol. 1). MURRAY Hill, NJ: Bell Laboratories.
@@ -179,21 +179,3 @@ REFERENCES
     [3] Kernighan, B. W., & Mashey, J. R. (1979). The UNIX™ programming environment. Software: Practice and Experience, 9(1), 1-15.
 
     [4] Kernighan, B. W., & Mashey, J. R. (1979). The UNIX™ programming environment. Software: Practice and Experience, 9(1), 1-15.
-
-AUTHOR
-    Niall Bastible Díaz
-    22314443
-    niall.bastiblediaz2@mail.dcu.ie
-
-ACKNOWLEDGEMENTS
-    I understand that the University regards breaches of academic integrity and plagiarism as grave and serious.
-
-    I have read and understood the DCU Academic Integrity and Plagiarism Policy.
-    I accept the penalties that may be imposed should I engage in practice or practices that breach this policy.
-
-    I have identified and included the source of all facts, ideas, opinions and viewpoints of others in the assignment references.
-    Direct quotations, paraphrasing, discussion of ideas from books, journal articles, internet sources, module text, or any other
-    source whatsoever are acknowledged and the sources cited are identified in the assignment references.
-
-    I declare that this material, which I now submit for assessment, is entirely my own work and has not been taken from the work of
-    others save and to the extent that such work has been cited and acknowledged within the text of my work.

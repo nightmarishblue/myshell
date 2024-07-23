@@ -9,7 +9,7 @@ DESCRIPTION
 
 INVOKING THE SHELL
     msh accepts a single option argument, the path to a file containing commands to execute. msh executes each line in the file one-by-one.
-    If no such file is provided, the shell enters interactive mode, allowing the user to move around the operating system and type commands
+    If no such file is provided, the shell enters interactive mode, allowing the user to move around the filesystem and type commands
     at their leisure.
 
 USING THE SHELL
@@ -27,14 +27,14 @@ USING THE SHELL
     More information on the environment and msh's interactions with it can be found in THE SHELL ENVIRONMENT.
 
 SHELL ARGUMENTS
-    A UNIX shell is more than a literal program. It is also a programming language unto itself
+    A UNIX shell is more than a literal program. It is also a programming language unto itself.
     The arguments to a msh command are "words" (strings of one or more non-space characters) separated by whitespace (strings of one or more
     space characters).
     In other words, if the command "touch list.txt script.msh" is inputted, then the arguments are "touch", "list.txt" and "script.msh" in order.
 
     In order to reference filenames that contain spaces, quotes can be used. The characters considered to be quotes by msh are ', " and `.
     If the command "touch 'shopping list.txt'" is inputted, then the arguments are "touch" and "shopping list.txt".
-    Any whitespace between a pair of quotes will be respected by the shell and considered part of the argument.
+    Any whitespace inside a pair of quotes will be respected by the shell and considered part of the argument.
 
 SHELL BUILTIN COMMANDS
     help

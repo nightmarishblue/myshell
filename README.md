@@ -1,5 +1,7 @@
 # myshell
-## the shell i built in a week and had to document for a month 🙂
+> "the shell i built in a week and had to document for a month 🙂"
+
+![relevant tech](https://skillicons.dev/icons?i=c,linux)
 
 Commandline UNIX shell that boasts:
 - Standard I/O redirection

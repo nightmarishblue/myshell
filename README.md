@@ -4,13 +4,13 @@
 Commandline UNIX shell that boasts:
 - Standard I/O redirection
 - Background execution of jobs
-- Configurability via ~/.mshrc
+- Configurability via `~/.mshrc`
 - (limited) environment variable expansion
 - Shell aliases!
 
 Run `make build` and check `bin/` for the binary.
 
-If you are looking for msh's manual, try looking in `manual/`.
+If you are looking for `msh`'s manual, try looking in `manual/`.
 
 ## Builtins (the important ones)
 Command | Effect
@@ -25,3 +25,12 @@ Command | Effect
 `alias [<shortcut> <command>]` | Makes `shortcut` an alias for `command`. If no args are given, print all aliases in the form `ALIAS=CMD`.
 `dealias [shortcut]` | Clears `shortcut`. If none is given, clear all aliases.
 `source <filename>` | Sources `filename`. This executes every line in it, with changes applying to this session.
+
+## Config
+Although limited, `msh` can be customised with aliases and cosmetics. The file `~/.mshrc` is sourced upon startup, allowing users to change the path format, and set environment variables and aliases. An example `.mshrc` might look like:
+
+```sh
+alias ll "ls -l"
+lpath
+putenv PAGER moar
+```
